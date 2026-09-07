@@ -1,3 +1,5 @@
+import { getWorkout } from './training-plan.mjs';
+
 const DB_NAME = 'shape-workout';
 const DB_VERSION = 1;
 let databasePromise;
@@ -51,26 +53,63 @@ export async function getAllWorkouts() {
   const db = await openDatabase();
   const transaction = db.transaction('workouts', 'readonly');
   const result = await requestResult(transaction.objectStore('workouts').getAll());
-  return result.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+  return result.map(normalizeWorkout).sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
 }
 
 export async function exportBackup() {
-  const [settings, draft, workouts] = await Promise.all([
+  const [settings, rawDraft, workouts] = await Promise.all([
     getItem('settings', 'app'),
     getItem('drafts', 'active'),
     getAllWorkouts(),
   ]);
   return {
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     settings: settings ?? null,
-    draft: draft ?? null,
+    draft: normalizeDraft(rawDraft),
     workouts,
   };
 }
 
+function lastRecordedValue(sets, key) {
+  if (!Array.isArray(sets)) return '';
+  const match = [...sets].reverse().find((set) => set.completed && set[key] !== '' && set[key] !== undefined && set[key] !== null);
+  return match ? match[key] : '';
+}
+
+function normalizeExercise(exercise, templateExercise) {
+  const legacySets = Array.isArray(exercise.sets) ? exercise.sets : [];
+  const base = templateExercise ?? exercise;
+  const completed = exercise.completed ?? legacySets.some((set) => set.completed);
+  return {
+    ...base,
+    weightKg: exercise.weightKg ?? lastRecordedValue(legacySets, 'weight'),
+    rirFinal: exercise.rirFinal ?? lastRecordedValue(legacySets, 'rir'),
+    completed,
+    completedAt: exercise.completedAt ?? lastRecordedValue(legacySets, 'completedAt') ?? null,
+  };
+}
+
+export function normalizeWorkout(workout) {
+  if (!workout || typeof workout !== 'object') return workout;
+  const template = getWorkout(workout.workoutId);
+  const byId = new Map((template?.exercises ?? []).map((exercise) => [exercise.id, exercise]));
+  return {
+    ...workout,
+    recordVersion: 2,
+    exercises: Array.isArray(workout.exercises)
+      ? workout.exercises.map((exercise) => normalizeExercise(exercise, byId.get(exercise.id)))
+      : [],
+  };
+}
+
+export function normalizeDraft(draft) {
+  if (!draft?.data) return draft ?? null;
+  return { ...draft, data: normalizeWorkout(draft.data) };
+}
+
 function validBackup(value) {
-  return value && value.version === 1 && Array.isArray(value.workouts) &&
+  return value && (value.version === 1 || value.version === 2) && Array.isArray(value.workouts) &&
     value.workouts.every((workout) => typeof workout.id === 'string' && typeof workout.workoutId === 'string' && Array.isArray(workout.exercises));
 }
 
@@ -80,8 +119,8 @@ export async function importBackup(backup) {
   const transaction = db.transaction(['settings', 'drafts', 'workouts'], 'readwrite');
   for (const name of ['settings', 'drafts', 'workouts']) transaction.objectStore(name).clear();
   if (backup.settings) transaction.objectStore('settings').put(backup.settings);
-  if (backup.draft) transaction.objectStore('drafts').put(backup.draft);
-  backup.workouts.forEach((workout) => transaction.objectStore('workouts').put(workout));
+  if (backup.draft) transaction.objectStore('drafts').put(normalizeDraft(backup.draft));
+  backup.workouts.forEach((workout) => transaction.objectStore('workouts').put(normalizeWorkout(workout)));
   await new Promise((resolve, reject) => {
     transaction.oncomplete = resolve;
     transaction.onerror = () => reject(transaction.error);

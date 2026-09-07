@@ -98,13 +98,13 @@ Mantenha a carga até realizar o limite superior de repetições em todas as sé
 
 ## Registro de sessão
 
-No iPhone, use a [PWA de registro](../app/) para preencher carga, repetições e RIR de cada série, consultar o último resultado e salvar o histórico offline. Ao concluir o treino, ela sugere a próxima sessão PPL. Exporte o backup JSON semanalmente na área **Dados**.
+No iPhone, use a [PWA de registro](../app/) para preencher uma carga e o RIR final de cada exercício, consultar o último resultado e salvar o histórico offline. Séries, repetições e descanso continuam visíveis na app como referência. Ao concluir o treino, ela sugere a próxima sessão PPL. Exporte o backup JSON semanalmente na área **Dados**.
 
 Caso registre manualmente, copie esta tabela para cada treino.
 
-| Data | Dia | Exercício | Carga | Séries realizadas | Repetições | RIR final | Observação técnica/dor |
-| --- | --- | --- | ---: | --- | --- | ---: | --- |
-|  |  |  |  |  |  |  |  |
+| Data | Dia | Exercício | Carga predominante | RIR final | Exercício concluído? | Observação técnica/dor |
+| --- | --- | --- | ---: | ---: | --- | --- |
+|  |  |  |  |  |  |  |
 
 ## Ajuste de volume e segurança
 

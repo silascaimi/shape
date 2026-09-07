@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shape-treino-v1';
+const CACHE_NAME = 'shape-treino-v2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -16,7 +16,10 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(Promise.all([
+    caches.keys().then((keys) => Promise.all(keys.filter((key) => key.startsWith('shape-treino-') && key !== CACHE_NAME).map((key) => caches.delete(key)))),
+    self.clients.claim(),
+  ]));
 });
 
 self.addEventListener('fetch', (event) => {

@@ -46,6 +46,8 @@ p { line-height: 1.5; }
 .bottom-nav button { min-height: 42px; color: var(--muted); background: transparent; font-size: .85rem; font-weight: 700; }
 .bottom-nav button.is-active { color: var(--accent); background: #12332c; }
 .exercise-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.exercise-card.is-complete { border-color: var(--accent-strong); }
+.exercise-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
 .pill { padding: 4px 8px; border-radius: 999px; color: #dbeafe; background: #1e3a5f; font-size: .76rem; font-weight: 700; }
 .pill.accent { color: #d1fae5; background: #14532d; }
 .substitute, .previous { margin: 8px 0; color: var(--muted); font-size: .85rem; }
@@ -74,6 +76,7 @@ p { line-height: 1.5; }
 
 @media (max-width: 410px) {
   main { padding-inline: 12px; }
+  .exercise-form { gap: 8px; }
   .set-row { grid-template-columns: 28px 1fr 1fr 62px 40px; gap: 5px; }
   .field input { padding-inline: 3px; }
 }

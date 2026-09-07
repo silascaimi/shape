@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { WORKOUTS } from '../training-plan.mjs';
+import { normalizeWorkout } from '../db.mjs';
 
 const markdown = await readFile(new URL('../../docs/01-treino.md', import.meta.url), 'utf8');
+const appSource = await readFile(new URL('../app.mjs', import.meta.url), 'utf8');
 
 assert.equal(WORKOUTS.length, 6, 'O app deve ter seis sessões.');
 for (const workout of WORKOUTS) {
@@ -19,4 +21,20 @@ for (const workout of WORKOUTS) {
   assert.deepEqual(workout.exercises.map((exercise) => exercise.name), namesInMarkdown, `${workout.name} diverge do Markdown.`);
 }
 
-console.log('Plano PWA validado: seis sessões, sete exercícios e 15–17 séries por sessão.');
+assert.match(appSource, /weightKg/);
+assert.match(appSource, /rirFinal/);
+assert.doesNotMatch(appSource, /createSeries|data-series-index|Série extra/);
+
+const legacy = normalizeWorkout({
+  id: 'legacy', workoutId: 'push-a', workoutName: 'Push A', startedAt: '2026-01-01T10:00:00.000Z', completedAt: '2026-01-01T11:00:00.000Z',
+  exercises: [{ id: 'supino-inclinado-maquina', sets: [
+    { weight: '40', rir: '3', completed: true, completedAt: '2026-01-01T10:10:00.000Z' },
+    { weight: '45', rir: '2', completed: true, completedAt: '2026-01-01T10:14:00.000Z' },
+  ] }],
+});
+assert.equal(legacy.recordVersion, 2);
+assert.equal(legacy.exercises[0].weightKg, '45');
+assert.equal(legacy.exercises[0].rirFinal, '2');
+assert.equal(legacy.exercises[0].completed, true);
+
+console.log('Plano PWA validado: seis sessões, sete exercícios, registro único e migração de dados antigos.');
