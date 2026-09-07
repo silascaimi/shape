@@ -1,10 +1,12 @@
-const CACHE_NAME = 'shape-treino-v2';
+const CACHE_NAME = 'shape-treino-v3';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './app.mjs',
   './db.mjs',
+  './google-config.mjs',
+  './google-drive.mjs',
   './training-plan.mjs',
   './manifest.webmanifest',
   './icon.svg',

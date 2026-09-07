@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { WORKOUTS } from '../training-plan.mjs';
 import { normalizeWorkout } from '../db.mjs';
+import { isGoogleConfigured, selectBackupsForDeletion } from '../google-drive.mjs';
 
 const markdown = await readFile(new URL('../../docs/01-treino.md', import.meta.url), 'utf8');
 const appSource = await readFile(new URL('../app.mjs', import.meta.url), 'utf8');
@@ -37,4 +38,12 @@ assert.equal(legacy.exercises[0].weightKg, '45');
 assert.equal(legacy.exercises[0].rirFinal, '2');
 assert.equal(legacy.exercises[0].completed, true);
 
-console.log('Plano PWA validado: seis sessões, sete exercícios, registro único e migração de dados antigos.');
+const remoteVersions = Array.from({ length: 32 }, (_, index) => ({
+  id: `backup-${index}`,
+  modifiedTime: new Date(Date.UTC(2026, 0, 1, 0, index)).toISOString(),
+}));
+assert.equal(selectBackupsForDeletion(remoteVersions).length, 2);
+assert.deepEqual(selectBackupsForDeletion(remoteVersions).map((file) => file.id), ['backup-1', 'backup-0']);
+assert.equal(isGoogleConfigured(), false, 'O Client ID público deve ser configurado explicitamente pelo usuário.');
+
+console.log('Plano PWA validado: treino, registro único, migração e retenção de backup Google.');

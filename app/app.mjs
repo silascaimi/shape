@@ -1,11 +1,12 @@
 import { WORKOUT_SEQUENCE, WORKOUTS, getWorkout } from './training-plan.mjs';
 import { deleteItem, exportBackup, getAllWorkouts, getItem, importBackup, normalizeDraft, normalizeWorkout, putItem } from './db.mjs';
+import { downloadGoogleBackup, hasActiveGoogleToken, isGoogleConfigured, listGoogleBackups, requestGoogleAccess, uploadGoogleBackup } from './google-drive.mjs';
 
 const app = document.querySelector('#app');
 const toast = document.querySelector('#toast');
 const timer = document.querySelector('#timer');
 const connectionStatus = document.querySelector('#connection-status');
-const state = { view: 'home', history: [], active: null, settings: { key: 'app', lastCompletedWorkoutId: null }, detailId: null, timerId: null, saveId: null };
+const state = { view: 'home', history: [], active: null, settings: { key: 'app', lastCompletedWorkoutId: null }, detailId: null, timerId: null, saveId: null, remoteBackups: [] };
 
 const html = (value) => String(value ?? '').replace(/[&<>'"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[c]);
 const numeric = (value) => Number(String(value).replace(',', '.'));
@@ -20,6 +21,54 @@ function message(text) {
 function setConnection() {
   connectionStatus.textContent = navigator.onLine ? 'Pronto offline' : 'Offline';
   connectionStatus.style.color = navigator.onLine ? 'var(--accent)' : 'var(--warning)';
+}
+
+function googleState() {
+  if (!state.settings.googleBackup) state.settings.googleBackup = { enabled: false, pending: false, lastBackupAt: null, lastError: '' };
+  return state.settings.googleBackup;
+}
+
+async function saveSettings() {
+  await putItem('settings', state.settings);
+}
+
+async function setGoogleState(patch) {
+  Object.assign(googleState(), patch);
+  await saveSettings();
+}
+
+async function refreshLocalState() {
+  const [history, draft, settings] = await Promise.all([getAllWorkouts(), getItem('drafts', 'active'), getItem('settings', 'app')]);
+  state.history = history;
+  state.active = normalizeDraft(draft)?.data ?? null;
+  state.settings = settings ?? { key: 'app', lastCompletedWorkoutId: null };
+  googleState();
+}
+
+async function saveGoogleBackup({ interactive = false } = {}) {
+  if (!isGoogleConfigured()) throw new Error('O Client ID Google ainda não foi configurado nesta PWA.');
+  if (!navigator.onLine) throw new Error('Sem internet. O backup ficará pendente neste iPhone.');
+  if (interactive || !hasActiveGoogleToken()) await requestGoogleAccess({ forcePrompt: interactive || !hasActiveGoogleToken() });
+  const backup = await exportBackup();
+  const file = await uploadGoogleBackup(backup);
+  await setGoogleState({ enabled: true, pending: false, lastBackupAt: file.modifiedTime || new Date().toISOString(), lastError: '' });
+  return file;
+}
+
+async function tryAutomaticGoogleBackup() {
+  const google = googleState();
+  if (!google.enabled) return;
+  if (!navigator.onLine || !hasActiveGoogleToken()) {
+    await setGoogleState({ pending: true, lastError: navigator.onLine ? 'Autorize o Google novamente para enviar o backup.' : 'Sem internet; backup pendente.' });
+    return;
+  }
+  try {
+    await saveGoogleBackup();
+    message('Treino salvo e backup Google atualizado.');
+  } catch (error) {
+    await setGoogleState({ pending: true, lastError: error.message || 'Falha no backup Google.' });
+    message('Treino salvo neste iPhone; backup Google pendente.');
+  }
 }
 
 function nextWorkoutId() {
@@ -102,7 +151,24 @@ function renderHistory() {
 }
 
 function renderData() {
-  app.innerHTML = `<section class="screen-heading"><p class="eyebrow">Dados no aparelho</p><h1>Backup e restauração</h1><p class="muted">Os dados não são enviados para nenhum servidor. Exporte um backup semanalmente.</p></section><section class="card"><h2>Exportar backup</h2><p class="small">Guarde o arquivo JSON em Arquivos ou iCloud Drive.</p><button class="button" data-export>Exportar JSON</button></section><section class="card"><h2>Importar backup</h2><p class="notice">A importação substitui todos os registros locais existentes.</p><input id="import-file" type="file" accept="application/json,.json" hidden><button class="button secondary" data-import>Selecionar arquivo JSON</button></section><section class="card"><h2>Proteção dos registros</h2><p class="small">Limpar os dados do Safari, usar navegação privada ou trocar de aparelho pode apagar dados não exportados.</p></section>`;
+  const google = googleState();
+  const status = !isGoogleConfigured()
+    ? 'Configuração Google pendente'
+    : google.pending
+      ? 'Backup pendente'
+      : google.lastBackupAt
+        ? `Último backup: ${dateTime(google.lastBackupAt)}`
+        : 'Google ainda não conectado';
+  const versions = state.remoteBackups.length
+    ? `<ul class="history-list">${state.remoteBackups.map((file) => `<li><div class="card"><div class="row-between"><div><strong>${dateTime(file.modifiedTime)}</strong><br><span class="small">${file.size ? `${Math.max(1, Math.round(Number(file.size) / 1024))} KB` : 'Tamanho indisponível'}</span></div><button class="button secondary small-button" data-restore-google="${html(file.id)}">Restaurar</button></div></div></li>`).join('')}</ul>`
+    : '<p class="small">Toque em “Listar versões” para consultar os backups privados da app.</p>';
+  app.innerHTML = `
+    <section class="screen-heading"><p class="eyebrow">Dados no aparelho</p><h1>Backup e restauração</h1><p class="muted">O histórico permanece neste iPhone e pode ser protegido na pasta privada da app no Google Drive.</p></section>
+    <section class="card"><h2>Backup Google</h2><p class="previous"><strong>${html(status)}</strong>${google.lastError ? `<br>${html(google.lastError)}` : ''}</p>${isGoogleConfigured() ? `<div class="button-row"><button class="button" data-google-connect>${google.enabled ? 'Autorizar Google novamente' : 'Conectar ao Google'}</button><button class="button secondary" data-google-backup>Fazer backup agora</button><button class="button secondary" data-google-list>Listar versões</button></div>` : '<p class="notice">Defina o Client ID OAuth em <code>app/google-config.mjs</code> antes de conectar sua conta.</p>'}</section>
+    ${isGoogleConfigured() ? `<section class="card"><h2>Versões no Google Drive</h2>${versions}<p class="small">São mantidas as 30 versões mais recentes. Restaurar substitui todos os dados locais; não há mesclagem automática.</p></section>` : ''}
+    <section class="card"><h2>Exportar arquivo local</h2><p class="small">Guarde um JSON em Arquivos ou iCloud Drive como cópia adicional.</p><button class="button secondary" data-export>Exportar JSON</button></section>
+    <section class="card"><h2>Importar arquivo local</h2><p class="notice">A importação substitui todos os registros locais existentes.</p><input id="import-file" type="file" accept="application/json,.json" hidden><button class="button secondary" data-import>Selecionar arquivo JSON</button></section>
+    <section class="card"><h2>Proteção dos registros</h2><p class="small">O Google recebe somente o arquivo de backup. Token OAuth e senha não são salvos pela app. Remover o acesso da app ou excluir seus dados dela no Google Drive torna essas cópias indisponíveis.</p></section>`;
 }
 
 function render() {
@@ -151,9 +217,11 @@ async function finish() {
   if (!confirm('Concluir este treino e adicioná-lo ao histórico?')) return;
   const complete = normalizeWorkout({ ...state.active, completedAt: new Date().toISOString() });
   await putItem('workouts', complete);
-  state.settings = { key: 'app', lastCompletedWorkoutId: complete.workoutId, lastCompletedAt: complete.completedAt };
-  await putItem('settings', state.settings); await deleteItem('drafts', 'active');
-  state.history.unshift(complete); state.active = null; state.view = 'home'; render(); message('Treino salvo no histórico.');
+  state.settings = { ...state.settings, key: 'app', lastCompletedWorkoutId: complete.workoutId, lastCompletedAt: complete.completedAt };
+  await saveSettings(); await deleteItem('drafts', 'active');
+  state.history.unshift(complete); state.active = null; state.view = 'home'; render();
+  await tryAutomaticGoogleBackup();
+  if (!googleState().enabled) message('Treino salvo no histórico.');
 }
 
 async function backup() {
@@ -166,9 +234,66 @@ async function restore(file) {
   if (!file || !confirm('A importação substituirá todos os dados locais. Continuar?')) return;
   try {
     await importBackup(JSON.parse(await file.text()));
-    const [history, draft, settings] = await Promise.all([getAllWorkouts(), getItem('drafts', 'active'), getItem('settings', 'app')]);
-    state.history = history; state.active = normalizeDraft(draft)?.data ?? null; state.settings = settings ?? { key: 'app', lastCompletedWorkoutId: null }; state.view = 'home'; render(); message('Backup restaurado neste iPhone.');
+    await refreshLocalState(); state.view = 'home'; render(); message('Backup restaurado neste iPhone.');
   } catch (error) { message(error.message || 'Não foi possível importar este arquivo.'); }
+}
+
+async function connectGoogle() {
+  try {
+    await requestGoogleAccess({ forcePrompt: true });
+    await setGoogleState({ enabled: true, pending: false, lastError: '' });
+    await saveGoogleBackup();
+    state.remoteBackups = await listGoogleBackups();
+    renderData();
+    message('Google conectado e primeiro backup criado.');
+  } catch (error) {
+    await setGoogleState({ pending: true, lastError: error.message || 'Não foi possível conectar ao Google.' });
+    renderData();
+    message('A conexão ou o backup Google não foi concluído.');
+  }
+}
+
+async function backupGoogleNow() {
+  try {
+    await requestGoogleAccess({ forcePrompt: !hasActiveGoogleToken() });
+    await setGoogleState({ enabled: true, pending: false, lastError: '' });
+    await saveGoogleBackup();
+    state.remoteBackups = await listGoogleBackups();
+    renderData();
+    message('Backup Google concluído.');
+  } catch (error) {
+    await setGoogleState({ pending: true, lastError: error.message || 'Falha no backup Google.' });
+    renderData();
+    message('O backup Google ficou pendente. Seus dados locais continuam salvos.');
+  }
+}
+
+async function listGoogleVersions() {
+  try {
+    await requestGoogleAccess({ forcePrompt: !hasActiveGoogleToken() });
+    await setGoogleState({ enabled: true, lastError: '' });
+    state.remoteBackups = await listGoogleBackups();
+    renderData();
+  } catch (error) {
+    await setGoogleState({ pending: true, lastError: error.message || 'Não foi possível listar os backups.' });
+    renderData();
+    message('Não foi possível consultar os backups Google.');
+  }
+}
+
+async function restoreGoogleVersion(fileId) {
+  if (!confirm('Restaurar esta versão substituirá todo o histórico local. Exporte um JSON local se desejar uma cópia antes de continuar.')) return;
+  try {
+    await requestGoogleAccess({ forcePrompt: !hasActiveGoogleToken() });
+    const backupData = await downloadGoogleBackup(fileId);
+    if (!confirm('Confirma a substituição dos dados deste iPhone pela versão escolhida?')) return;
+    await importBackup(backupData);
+    await refreshLocalState();
+    state.view = 'home'; render();
+    message('Backup Google restaurado neste iPhone.');
+  } catch (error) {
+    message(error.message || 'Não foi possível restaurar esta versão.');
+  }
 }
 
 app.addEventListener('input', (event) => {
@@ -190,6 +315,10 @@ app.addEventListener('click', async (event) => {
   else if (button.dataset.closeHistory !== undefined) { state.detailId = null; renderHistory(); }
   else if (button.dataset.export !== undefined) await backup();
   else if (button.dataset.import !== undefined) document.querySelector('#import-file').click();
+  else if (button.dataset.googleConnect !== undefined) await connectGoogle();
+  else if (button.dataset.googleBackup !== undefined) await backupGoogleNow();
+  else if (button.dataset.googleList !== undefined) await listGoogleVersions();
+  else if (button.dataset.restoreGoogle !== undefined) await restoreGoogleVersion(button.dataset.restoreGoogle);
 });
 document.querySelector('.bottom-nav').addEventListener('click', (event) => {
   const button = event.target.closest('[data-view]'); if (!button) return;
@@ -198,8 +327,7 @@ document.querySelector('.bottom-nav').addEventListener('click', (event) => {
 
 async function initialize() {
   try {
-    const [history, draft, settings] = await Promise.all([getAllWorkouts(), getItem('drafts', 'active'), getItem('settings', 'app')]);
-    state.history = history; state.active = normalizeDraft(draft)?.data ?? null; state.settings = settings ?? state.settings;
+    await refreshLocalState();
   } catch { message('O navegador não conseguiu abrir o armazenamento local.'); }
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(() => {});
   setConnection(); render();

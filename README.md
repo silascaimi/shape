@@ -35,6 +35,8 @@ A PWA em [`app/`](app/) registra uma carga e o RIR final por exercício, mostra 
 
 Os registros ficam apenas no armazenamento do Safari deste iPhone. Em **Dados**, exporte um backup JSON pelo menos uma vez por semana e guarde-o em Arquivos ou iCloud Drive. Limpar dados do Safari, usar navegação privada ou trocar de aparelho pode apagar os dados não exportados.
 
+Para ativar backup automático privado na conta Google, siga [Configuração do backup Google](docs/06-backup-google.md). A PWA guarda até 30 versões na pasta privada da app no Drive e nunca armazena senha ou token OAuth no aparelho.
+
 ## Marcos do ciclo
 
 | Semana | Foco | Ação |
