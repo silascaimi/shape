@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#111827">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Shape">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="apple-touch-icon" href="./icon.svg">
+    <link rel="stylesheet" href="./styles.css">
+    <title>Shape — Registro de treino</title>
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="brand" href="./" aria-label="Início">Shape <span>Treino</span></a>
+      <span id="connection-status" class="connection-status">Local</span>
+    </header>
+    <main id="app" tabindex="-1" aria-live="polite"></main>
+    <div id="timer" class="timer is-hidden" role="status" aria-live="polite"></div>
+    <div id="toast" class="toast is-hidden" role="status" aria-live="polite"></div>
+    <nav class="bottom-nav" aria-label="Navegação principal">
+      <button type="button" data-view="home">Início</button>
+      <button type="button" data-view="history">Histórico</button>
+      <button type="button" data-view="data">Dados</button>
+    </nav>
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>
