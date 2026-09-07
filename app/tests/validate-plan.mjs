@@ -44,6 +44,6 @@ const remoteVersions = Array.from({ length: 32 }, (_, index) => ({
 }));
 assert.equal(selectBackupsForDeletion(remoteVersions).length, 2);
 assert.deepEqual(selectBackupsForDeletion(remoteVersions).map((file) => file.id), ['backup-1', 'backup-0']);
-assert.equal(isGoogleConfigured(), false, 'O Client ID público deve ser configurado explicitamente pelo usuário.');
+assert.equal(isGoogleConfigured(), true, 'O Client ID público do Google deve estar configurado.');
 
 console.log('Plano PWA validado: treino, registro único, migração e retenção de backup Google.');
