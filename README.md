@@ -23,7 +23,7 @@ O objetivo das próximas 12 semanas é criar consistência e ganhar em média **
 ## Como usar este acervo
 
 1. Antes da primeira sessão, preencha as cargas iniciais e tire fotos opcionais de progresso em condições repetíveis.
-2. Execute a divisão PPL em [Treino](docs/01-treino.md), registrando uma carga e o RIR final de cada exercício.
+2. Execute a divisão PPL em [Treino](docs/01-treino.md), registrando repetições, carga e RIR final de cada exercício.
 3. Use [Nutrição e suplementos](docs/02-nutricao.md) como ponto de partida diário; não some suplementos fora dos macros planejados.
 4. Registre sono, hidratação e sinais de recuperação em [Recuperação](docs/03-recuperacao.md).
 5. Faça o check-in semanal e aplique as regras objetivas em [Acompanhamento](docs/04-acompanhamento.md).
@@ -31,7 +31,7 @@ O objetivo das próximas 12 semanas é criar consistência e ganhar em média **
 
 ## Registro no iPhone
 
-A PWA em [`app/`](app/) registra uma carga e o RIR final por exercício, mostra o último resultado e funciona offline após a primeira abertura. Séries e repetições permanecem visíveis apenas como referência do plano. Quando publicada no GitHub Pages, abra a URL no Safari e use **Compartilhar → Adicionar à Tela de Início**.
+A PWA em [`app/`](app/) registra repetições, carga e RIR final por exercício, mostra o último resultado e funciona offline após a primeira abertura. Séries e descanso permanecem visíveis como referência do plano. Quando publicada no GitHub Pages, abra a URL no Safari e use **Compartilhar → Adicionar à Tela de Início**.
 
 Os registros ficam apenas no armazenamento do Safari deste iPhone. Em **Dados**, exporte um backup JSON pelo menos uma vez por semana e guarde-o em Arquivos ou iCloud Drive. Limpar dados do Safari, usar navegação privada ou trocar de aparelho pode apagar os dados não exportados.
 

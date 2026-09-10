@@ -53,7 +53,7 @@ export const WORKOUTS = [
       exercise('romeno-halter-a', 'Levantamento romeno com halteres', 3, '8–12', '2 min', '2', 'Levantamento romeno no smith'),
       exercise('cadeira-flexora', 'Cadeira flexora', 2, '10–15', '90 s', '1–2', 'Mesa flexora'),
       exercise('panturrilha-leg-press-a', 'Panturrilha no leg press', 3, '10–15', '60–90 s', '1–2', 'Panturrilha em pé com halteres'),
-      exercise('prancha', 'Prancha', 2, '30–60 s', '60 s', '—', 'Dead bug, 2 × 8–12/lado', { bodyweight: true, metric: 'segundos' }),
+      exercise('cadeira-abdutora', 'Cadeira abdutora', 2, '12–20', '60–90 s', '1–2', 'Abdução no cabo'),
       exercise('cadeira-adutora', 'Cadeira adutora', 2, '12–20', '60–90 s', '1–2', 'Adução no cabo'),
     ],
   },

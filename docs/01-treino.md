@@ -17,7 +17,7 @@ Faça as superséries sem descanso entre os dois exercícios e descanse 60–90 
 | --- | --- |
 | Push A / Push B | Elevação lateral + tríceps na polia |
 | Pull A / Pull B | Deltoide posterior + bíceps |
-| Legs A | Panturrilha + prancha |
+| Legs A | Panturrilha + cadeira abdutora |
 | Legs B | Abdutora + dead bug |
 
 ## Progressão dupla
@@ -57,7 +57,7 @@ Mantenha a carga até realizar o limite superior de repetições em todas as sé
 | Levantamento romeno com halteres | 3 × 8–12 | 2 min | 2 | Levantamento romeno no smith |
 | Cadeira flexora | 2 × 10–15 | 90 s | 1–2 | Mesa flexora |
 | Panturrilha no leg press | 3 × 10–15 | 60–90 s | 1–2 | Panturrilha em pé com halteres |
-| Prancha | 2 × 30–60 s | 60 s | — | Dead bug, 2 × 8–12/lado |
+| Cadeira abdutora | 2 × 12–20 | 60–90 s | 1–2 | Abdução no cabo |
 | Cadeira adutora | 2 × 12–20 | 60–90 s | 1–2 | Adução no cabo |
 
 ## Push B
@@ -98,13 +98,13 @@ Mantenha a carga até realizar o limite superior de repetições em todas as sé
 
 ## Registro de sessão
 
-No iPhone, use a [PWA de registro](../app/) para preencher uma carga e o RIR final de cada exercício, consultar o último resultado e salvar o histórico offline. Séries, repetições e descanso continuam visíveis na app como referência. Ao concluir o treino, ela sugere a próxima sessão PPL. Exporte o backup JSON semanalmente na área **Dados**.
+No iPhone, use a [PWA de registro](../app/) para preencher as repetições, a carga e o RIR final de cada exercício, consultar o último resultado e salvar o histórico offline. Séries e descanso continuam visíveis na app como referência. Ao concluir o treino, ela sugere a próxima sessão PPL. Exporte o backup JSON semanalmente na área **Dados**.
 
 Caso registre manualmente, copie esta tabela para cada treino.
 
-| Data | Dia | Exercício | Carga predominante | RIR final | Exercício concluído? | Observação técnica/dor |
-| --- | --- | --- | ---: | ---: | --- | --- |
-|  |  |  |  |  |  |  |
+| Data | Dia | Exercício | Repetições finais | Carga predominante | RIR final | Exercício concluído? | Observação técnica/dor |
+| --- | --- | --- | ---: | ---: | ---: | --- | --- |
+|  |  |  |  |  |  |  |  |
 
 ## Ajuste de volume e segurança
 

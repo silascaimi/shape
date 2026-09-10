@@ -4,9 +4,8 @@ import { downloadGoogleBackup, hasActiveGoogleToken, isGoogleConfigured, listGoo
 
 const app = document.querySelector('#app');
 const toast = document.querySelector('#toast');
-const timer = document.querySelector('#timer');
 const connectionStatus = document.querySelector('#connection-status');
-const state = { view: 'home', history: [], active: null, settings: { key: 'app', lastCompletedWorkoutId: null }, detailId: null, timerId: null, saveId: null, remoteBackups: [] };
+const state = { view: 'home', history: [], active: null, settings: { key: 'app', lastCompletedWorkoutId: null }, detailId: null, saveId: null, remoteBackups: [] };
 
 const html = (value) => String(value ?? '').replace(/[&<>'"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[c]);
 const numeric = (value) => Number(String(value).replace(',', '.'));
@@ -81,7 +80,7 @@ function newWorkout(workoutId) {
   return {
     id: crypto.randomUUID(), recordVersion: 2, workoutId, workoutName: workout.name,
     startedAt: new Date().toISOString(), completedAt: null,
-    exercises: workout.exercises.map((exercise) => ({ ...exercise, weightKg: '', rirFinal: '', completed: false, completedAt: null })),
+    exercises: workout.exercises.map((exercise) => ({ ...exercise, repsFinal: '', weightKg: '', rirFinal: '', completed: false, completedAt: null })),
   };
 }
 
@@ -103,43 +102,49 @@ function lastExercise(exerciseId) {
 function summary(exercise) {
   if (!exercise.completed) return 'Não concluído';
   const weight = exercise.bodyweight || exercise.weightKg === '' ? 'Peso corporal' : `${kg(exercise.weightKg)} kg`;
-  return `${weight}${exercise.rirFinal === '' || exercise.rirFinal === '—' ? '' : ` · RIR ${exercise.rirFinal}`}`;
+  const reps = exercise.repsFinal === '' || exercise.repsFinal === undefined ? '' : `${exercise.repsFinal} rep${Number(exercise.repsFinal) === 1 ? '' : 's'} · `;
+  return `${reps}${weight}${exercise.rirFinal === '' || exercise.rirFinal === '—' ? '' : ` · RIR ${exercise.rirFinal}`}`;
 }
 
 function renderHome() {
   const suggested = getWorkout(nextWorkoutId());
   app.innerHTML = `
-    <section class="screen-heading"><p class="eyebrow">Registro de cargas</p><h1>Seu próximo treino</h1><p class="muted">Registre uma carga e o RIR final por exercício.</p></section>
+    <section class="screen-heading"><p class="eyebrow">Registro de treino</p><h1>Seu próximo treino</h1><p class="muted">Registre repetições, carga e RIR final por exercício.</p></section>
     ${state.active ? `<section class="card notice"><strong>Treino em andamento: ${html(state.active.workoutName)}</strong><p class="small">Iniciado em ${dateTime(state.active.startedAt)}.</p><button class="button" data-resume>Retomar treino</button></section>` : ''}
     <section class="card card-accent"><p class="eyebrow">Sugerido pela sequência PPL</p><h2>${html(suggested.name)}</h2><p class="muted">${html(suggested.focus)} · 7 exercícios</p><button class="button" data-start="${suggested.id}">Iniciar ${html(suggested.name)}</button></section>
     <section class="card"><h2>Escolher outro treino</h2><select class="session-picker" id="workout-picker" aria-label="Escolher treino">${WORKOUTS.map((workout) => `<option value="${workout.id}">${html(workout.name)} — ${html(workout.focus)}</option>`).join('')}</select><button class="button secondary" data-start-selected>Iniciar treino selecionado</button></section>
     <section class="card"><h2>Instalar no iPhone</h2><ol class="install-steps"><li>Abra no Safari.</li><li>Toque em Compartilhar.</li><li>Escolha “Adicionar à Tela de Início”.</li></ol><p class="small">Funciona offline após a primeira abertura.</p></section>`;
 }
 
+function renderExerciseCard(exercise, index) {
+  const previous = lastExercise(exercise.id);
+  return `<section class="card exercise-card ${exercise.completed ? 'is-complete' : ''}">
+    <div class="card-header"><h2>${index + 1}. ${html(exercise.name)}</h2><span class="pill accent">${exercise.sets} séries</span></div>
+    <div class="exercise-meta"><span class="pill">${html(exercise.reps)}</span><span class="pill">RIR alvo ${html(exercise.rir)}</span><span class="pill">Descanso ${html(exercise.rest)}</span></div>
+    <p class="substitute">Alternativa: ${html(exercise.substitute)}</p>
+    <p class="previous"><strong>Último:</strong> ${previous ? html(summary(previous)) : 'Sem registro anterior.'}</p>
+    <div class="exercise-form">
+      <div class="field"><label>Repetições</label><input type="number" min="1" step="1" inputmode="numeric" value="${html(exercise.repsFinal)}" placeholder="Ex.: 10" data-field="repsFinal" data-index="${index}" aria-label="Repetições finais"></div>
+      <div class="field"><label>Carga (kg)</label><input ${exercise.bodyweight ? 'disabled' : ''} type="number" min="0" step="0.5" inputmode="decimal" value="${html(exercise.weightKg)}" placeholder="${exercise.bodyweight ? 'Peso corporal' : 'Ex.: 40'}" data-field="weightKg" data-index="${index}" aria-label="Carga em quilogramas"></div>
+      <div class="field"><label>RIR final</label><input ${exercise.rir === '—' ? 'disabled' : ''} type="number" min="0" max="5" step="1" inputmode="numeric" value="${html(exercise.rirFinal)}" placeholder="${exercise.rir === '—' ? '—' : 'Ex.: 2'}" data-field="rirFinal" data-index="${index}" aria-label="RIR final"></div>
+    </div>
+    <div class="button-row">
+      ${previous && !exercise.bodyweight ? `<button class="button secondary small-button" data-copy data-index="${index}">Usar última carga</button>` : ''}
+      <button class="button ${exercise.completed ? 'secondary' : ''} small-button" data-toggle data-index="${index}">${exercise.completed ? 'Desmarcar' : 'Concluir exercício'}</button>
+    </div>
+  </section>`;
+}
+
 function renderWorkout() {
   if (!state.active) { state.view = 'home'; render(); return; }
   const workout = state.active;
+  const pending = workout.exercises.map((exercise, index) => ({ exercise, index })).filter(({ exercise }) => !exercise.completed);
+  const completed = workout.exercises.map((exercise, index) => ({ exercise, index })).filter(({ exercise }) => exercise.completed);
   app.innerHTML = `
-    <section class="screen-heading"><p class="eyebrow">Em andamento · ${dateTime(workout.startedAt)}</p><h1>${html(workout.workoutName)}</h1><p class="muted">A carga vale para o exercício inteiro. Séries e repetições são referência do plano.</p></section>
-    ${workout.exercises.map((exercise, index) => {
-      const previous = lastExercise(exercise.id);
-      return `<section class="card exercise-card ${exercise.completed ? 'is-complete' : ''}">
-        <div class="card-header"><h2>${index + 1}. ${html(exercise.name)}</h2><span class="pill accent">${exercise.sets} séries</span></div>
-        <div class="exercise-meta"><span class="pill">${html(exercise.reps)}</span><span class="pill">RIR alvo ${html(exercise.rir)}</span><span class="pill">Descanso ${html(exercise.rest)}</span></div>
-        <p class="substitute">Alternativa: ${html(exercise.substitute)}</p>
-        <p class="previous"><strong>Último:</strong> ${previous ? html(summary(previous)) : 'Sem registro anterior.'}</p>
-        <div class="exercise-form">
-          <div class="field"><label>Carga (kg)</label><input ${exercise.bodyweight ? 'disabled' : ''} type="number" min="0" step="0.5" inputmode="decimal" value="${html(exercise.weightKg)}" placeholder="${exercise.bodyweight ? 'Peso corporal' : 'Ex.: 40'}" data-field="weightKg" data-index="${index}" aria-label="Carga em quilogramas"></div>
-          <div class="field"><label>RIR final</label><input ${exercise.rir === '—' ? 'disabled' : ''} type="number" min="0" max="5" step="1" inputmode="numeric" value="${html(exercise.rirFinal)}" placeholder="${exercise.rir === '—' ? '—' : 'Ex.: 2'}" data-field="rirFinal" data-index="${index}" aria-label="RIR final"></div>
-        </div>
-        <div class="button-row">
-          ${previous && !exercise.bodyweight ? `<button class="button secondary small-button" data-copy data-index="${index}">Usar última carga</button>` : ''}
-          <button class="button secondary small-button" data-rest data-index="${index}">Iniciar descanso</button>
-          <button class="button ${exercise.completed ? 'secondary' : ''} small-button" data-toggle data-index="${index}">${exercise.completed ? 'Desmarcar' : 'Concluir exercício'}</button>
-        </div>
-      </section>`;
-    }).join('')}
-    <section class="workout-actions"><button class="button" data-finish>Concluir e salvar treino</button><button class="button secondary" data-home>Voltar sem concluir</button></section>`;
+    <section class="screen-heading"><p class="eyebrow">Em andamento · ${dateTime(workout.startedAt)}</p><h1>${html(workout.workoutName)}</h1><p class="muted">Registre as repetições, a carga e o RIR final de cada exercício.</p></section>
+    ${pending.map(({ exercise, index }) => renderExerciseCard(exercise, index)).join('')}
+    ${completed.length ? `<details class="completed-exercises"><summary>Exercícios concluídos (${completed.length})</summary><div class="completed-exercises-content">${completed.map(({ exercise, index }) => renderExerciseCard(exercise, index)).join('')}</div></details>` : ''}
+    <section class="workout-actions" aria-label="Ações do treino"><button class="icon-button" data-finish aria-label="Concluir e salvar treino" title="Concluir e salvar treino">✓</button><button class="icon-button secondary" data-home aria-label="Voltar sem concluir" title="Voltar sem concluir">←</button></section>`;
 }
 
 function renderHistory() {
@@ -182,26 +187,15 @@ async function start(workoutId) {
 }
 
 function isValid(exercise) {
+  const hasReps = Number.isInteger(numeric(exercise.repsFinal)) && numeric(exercise.repsFinal) > 0;
   const hasWeight = exercise.bodyweight || (exercise.weightKg !== '' && Number.isFinite(numeric(exercise.weightKg)) && numeric(exercise.weightKg) >= 0);
   const hasRir = exercise.rir === '—' || (Number.isInteger(numeric(exercise.rirFinal)) && numeric(exercise.rirFinal) >= 0 && numeric(exercise.rirFinal) <= 5);
-  return hasWeight && hasRir;
-}
-
-function beginRest(seconds) {
-  clearInterval(state.timerId);
-  const end = Date.now() + seconds * 1000;
-  timer.classList.remove('is-hidden');
-  const tick = () => {
-    const remaining = Math.max(0, Math.ceil((end - Date.now()) / 1000));
-    timer.textContent = `Descanso: ${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')}`;
-    if (!remaining) { clearInterval(state.timerId); timer.textContent = 'Descanso concluído'; setTimeout(() => timer.classList.add('is-hidden'), 1800); }
-  };
-  tick(); state.timerId = setInterval(tick, 1000);
+  return hasReps && hasWeight && hasRir;
 }
 
 async function toggle(index) {
   const exercise = state.active.exercises[index];
-  if (!exercise.completed && !isValid(exercise)) { message(exercise.bodyweight ? 'Preencha o RIR final antes de concluir.' : 'Preencha carga e RIR final antes de concluir.'); return; }
+  if (!exercise.completed && !isValid(exercise)) { message(exercise.bodyweight ? 'Preencha repetições antes de concluir.' : 'Preencha repetições, carga e RIR final antes de concluir.'); return; }
   exercise.completed = !exercise.completed; exercise.completedAt = exercise.completed ? new Date().toISOString() : null;
   await saveDraft(true); renderWorkout();
 }
@@ -213,7 +207,7 @@ async function copyLast(index) {
 }
 
 async function finish() {
-  if (state.active.exercises.some((exercise) => !exercise.completed || !isValid(exercise))) { message('Conclua os sete exercícios e preencha carga/RIR antes de finalizar.'); return; }
+  if (state.active.exercises.some((exercise) => !exercise.completed || !isValid(exercise))) { message('Conclua os sete exercícios e preencha repetições, carga e RIR antes de finalizar.'); return; }
   if (!confirm('Concluir este treino e adicioná-lo ao histórico?')) return;
   const complete = normalizeWorkout({ ...state.active, completedAt: new Date().toISOString() });
   await putItem('workouts', complete);
@@ -309,7 +303,6 @@ app.addEventListener('click', async (event) => {
   else if (button.dataset.home !== undefined) { state.view = 'home'; render(); }
   else if (button.dataset.toggle !== undefined) await toggle(Number(button.dataset.index));
   else if (button.dataset.copy !== undefined) await copyLast(Number(button.dataset.index));
-  else if (button.dataset.rest !== undefined) beginRest(state.active.exercises[Number(button.dataset.index)].restSeconds);
   else if (button.dataset.finish !== undefined) await finish();
   else if (button.dataset.history) { state.detailId = button.dataset.history; renderHistory(); }
   else if (button.dataset.closeHistory !== undefined) { state.detailId = null; renderHistory(); }

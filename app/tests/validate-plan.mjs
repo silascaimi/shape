@@ -23,8 +23,15 @@ for (const workout of WORKOUTS) {
 }
 
 assert.match(appSource, /weightKg/);
+assert.match(appSource, /repsFinal/);
 assert.match(appSource, /rirFinal/);
-assert.doesNotMatch(appSource, /createSeries|data-series-index|Série extra/);
+assert.match(appSource, /Exercícios concluídos/);
+assert.match(appSource, /icon-button/);
+assert.doesNotMatch(appSource, /createSeries|data-series-index|Série extra|data-rest(?=[\s=>])|beginRest|timerId/);
+
+const legsA = WORKOUTS.find((workout) => workout.id === 'legs-a');
+assert.ok(legsA.exercises.some((exercise) => exercise.id === 'cadeira-abdutora'));
+assert.ok(!legsA.exercises.some((exercise) => exercise.id === 'prancha'));
 
 const legacy = normalizeWorkout({
   id: 'legacy', workoutId: 'push-a', workoutName: 'Push A', startedAt: '2026-01-01T10:00:00.000Z', completedAt: '2026-01-01T11:00:00.000Z',
@@ -35,8 +42,15 @@ const legacy = normalizeWorkout({
 });
 assert.equal(legacy.recordVersion, 2);
 assert.equal(legacy.exercises[0].weightKg, '45');
+assert.equal(legacy.exercises[0].repsFinal, '');
 assert.equal(legacy.exercises[0].rirFinal, '2');
 assert.equal(legacy.exercises[0].completed, true);
+
+const current = normalizeWorkout({
+  id: 'current', workoutId: 'push-a', workoutName: 'Push A', startedAt: '2026-09-10T10:00:00.000Z', completedAt: '2026-09-10T11:00:00.000Z',
+  exercises: [{ id: 'supino-inclinado-maquina', repsFinal: '10', weightKg: '45', rirFinal: '2', completed: true }],
+});
+assert.equal(current.exercises[0].repsFinal, '10');
 
 const remoteVersions = Array.from({ length: 32 }, (_, index) => ({
   id: `backup-${index}`,

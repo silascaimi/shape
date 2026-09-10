@@ -83,6 +83,7 @@ function normalizeExercise(exercise, templateExercise) {
   const completed = exercise.completed ?? legacySets.some((set) => set.completed);
   return {
     ...base,
+    repsFinal: exercise.repsFinal ?? '',
     weightKg: exercise.weightKg ?? lastRecordedValue(legacySets, 'weight'),
     rirFinal: exercise.rirFinal ?? lastRecordedValue(legacySets, 'rir'),
     completed,
