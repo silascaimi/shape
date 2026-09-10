@@ -16,7 +16,7 @@ A PWA pode enviar snapshots do histórico para a pasta privada `appDataFolder` d
 
 - O único escopo solicitado é `drive.appdata`, limitado à pasta privada desta PWA.
 - O primeiro backup é criado na conexão. Depois, cada treino concluído cria uma versão automaticamente enquanto houver internet e a autorização estiver válida.
-- São mantidas as 30 versões mais recentes. A restauração é manual e substitui o banco local após duas confirmações.
+- São mantidas as 7 versões mais recentes. A restauração é manual e substitui o banco local após duas confirmações.
 - O token do Google vive apenas na memória do navegador; ao expirar, toque em **Fazer backup agora** ou **Autorizar Google novamente**.
 - Sem internet ou autorização válida, o treino continua salvo no iPhone e a app marca o backup como pendente.
 

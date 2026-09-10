@@ -4,7 +4,7 @@ const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
 const DRIVE_API = 'https://www.googleapis.com/drive/v3';
 const DRIVE_UPLOAD_API = 'https://www.googleapis.com/upload/drive/v3';
 const BACKUP_PREFIX = 'shape-backup-';
-const BACKUP_LIMIT = 30;
+const BACKUP_LIMIT = 7;
 let accessToken = '';
 let accessTokenExpiresAt = 0;
 let gisPromise;

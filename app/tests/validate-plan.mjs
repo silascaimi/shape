@@ -58,8 +58,8 @@ const remoteVersions = Array.from({ length: 32 }, (_, index) => ({
   id: `backup-${index}`,
   modifiedTime: new Date(Date.UTC(2026, 0, 1, 0, index)).toISOString(),
 }));
-assert.equal(selectBackupsForDeletion(remoteVersions).length, 2);
-assert.deepEqual(selectBackupsForDeletion(remoteVersions).map((file) => file.id), ['backup-1', 'backup-0']);
+assert.equal(selectBackupsForDeletion(remoteVersions).length, 25);
+assert.deepEqual(selectBackupsForDeletion(remoteVersions).map((file) => file.id), Array.from({ length: 25 }, (_, index) => `backup-${24 - index}`));
 assert.equal(isGoogleConfigured(), true, 'O Client ID público do Google deve estar configurado.');
 
 console.log('Plano PWA validado: treino, registro único, migração e retenção de backup Google.');
