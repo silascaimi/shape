@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { WORKOUTS } from '../training-plan.mjs';
-import { normalizeWorkout } from '../db.mjs';
+import { normalizeDraft, normalizeWorkout } from '../db.mjs';
 import { isGoogleConfigured, selectBackupsForDeletion } from '../google-drive.mjs';
 
 const markdown = await readFile(new URL('../../docs/01-treino.md', import.meta.url), 'utf8');
@@ -53,6 +53,16 @@ const current = normalizeWorkout({
   exercises: [{ id: 'supino-inclinado-maquina', repsFinal: '10', weightKg: '45', rirFinal: '2', completed: true }],
 });
 assert.equal(current.exercises[0].repsFinal, '10');
+
+const legacyDraft = normalizeDraft({
+  key: 'active',
+  data: {
+    id: 'legacy-draft', workoutId: 'legs-a', workoutName: 'Legs A', startedAt: '2026-09-10T10:00:00.000Z', completedAt: null,
+    exercises: [{ id: 'prancha', repsFinal: '45', weightKg: '', rirFinal: '', completed: false }],
+  },
+});
+assert.ok(legacyDraft.data.exercises.some((exercise) => exercise.id === 'cadeira-abdutora'));
+assert.ok(!legacyDraft.data.exercises.some((exercise) => exercise.id === 'prancha'));
 
 const remoteVersions = Array.from({ length: 32 }, (_, index) => ({
   id: `backup-${index}`,

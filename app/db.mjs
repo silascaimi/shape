@@ -106,7 +106,17 @@ export function normalizeWorkout(workout) {
 
 export function normalizeDraft(draft) {
   if (!draft?.data) return draft ?? null;
-  return { ...draft, data: normalizeWorkout(draft.data) };
+  const data = normalizeWorkout(draft.data);
+  const template = getWorkout(data.workoutId);
+  if (!template) return { ...draft, data };
+  const exercisesById = new Map(data.exercises.map((exercise) => [exercise.id, exercise]));
+  return {
+    ...draft,
+    data: {
+      ...data,
+      exercises: template.exercises.map((exercise) => normalizeExercise(exercisesById.get(exercise.id) ?? {}, exercise)),
+    },
+  };
 }
 
 function validBackup(value) {
