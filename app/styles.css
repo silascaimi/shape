@@ -65,6 +65,7 @@ p { line-height: 1.5; }
 .workout-actions-toggle { display: grid; width: 48px; min-width: 48px; min-height: 48px; padding: 0; place-items: center; border-radius: 50%; color: #052e23; background: var(--accent); font-size: 1.6rem; font-weight: 900; }
 .workout-actions-toggle[aria-expanded="true"] { color: var(--text); background: var(--surface-2); }
 .workout-action-menu { position: absolute; right: 0; bottom: 58px; display: grid; gap: 8px; width: 220px; padding: 8px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: 0 14px 32px #0008; }
+.workout-action-menu[hidden] { display: none; }
 .workout-action-menu-button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 11px; color: var(--text); background: var(--surface-2); font-size: .9rem; font-weight: 800; text-align: left; }
 .workout-action-menu-button.is-save { color: #052e23; background: var(--accent); }
 .toast { position: fixed; right: 16px; bottom: 142px; left: 16px; z-index: 9; max-width: 480px; margin: auto; padding: 12px 14px; border-radius: 12px; background: #1e3a5f; box-shadow: 0 8px 30px #0008; }
