@@ -26,7 +26,9 @@ assert.match(appSource, /weightKg/);
 assert.match(appSource, /repsFinal/);
 assert.match(appSource, /rirFinal/);
 assert.match(appSource, /Exercícios concluídos/);
-assert.match(appSource, /icon-button/);
+assert.match(appSource, /workout-actions-toggle/);
+assert.match(appSource, /workout-action-menu/);
+assert.doesNotMatch(appSource, /icon-button/);
 assert.doesNotMatch(appSource, /createSeries|data-series-index|Série extra|data-rest(?=[\s=>])|beginRest|timerId/);
 
 const legsA = WORKOUTS.find((workout) => workout.id === 'legs-a');

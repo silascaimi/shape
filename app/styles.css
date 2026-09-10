@@ -60,9 +60,13 @@ p { line-height: 1.5; }
 .completed-exercises summary { padding: 14px 16px; color: var(--accent); cursor: pointer; font-weight: 800; }
 .completed-exercises-content { padding: 0 12px 12px; }
 .completed-exercises-content .exercise-card { margin-bottom: 0; }
-.workout-actions { position: sticky; bottom: calc(82px + env(safe-area-inset-bottom)); z-index: 3; display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; padding: 10px; border: 1px solid var(--line); border-radius: 999px; background: rgba(17, 24, 39, .96); backdrop-filter: blur(10px); }
-.icon-button { display: grid; width: 48px; min-width: 48px; min-height: 48px; padding: 0; place-items: center; border-radius: 50%; color: #052e23; background: var(--accent); font-size: 1.35rem; font-weight: 900; }
-.icon-button.secondary { color: var(--text); background: var(--surface-2); }
+.workout-actions { position: sticky; bottom: calc(82px + env(safe-area-inset-bottom)); z-index: 3; display: flex; justify-content: flex-end; margin-top: 18px; padding: 10px 0; pointer-events: none; }
+.workout-actions-wrap { position: relative; pointer-events: auto; }
+.workout-actions-toggle { display: grid; width: 48px; min-width: 48px; min-height: 48px; padding: 0; place-items: center; border-radius: 50%; color: #052e23; background: var(--accent); font-size: 1.6rem; font-weight: 900; }
+.workout-actions-toggle[aria-expanded="true"] { color: var(--text); background: var(--surface-2); }
+.workout-action-menu { position: absolute; right: 0; bottom: 58px; display: grid; gap: 8px; width: 220px; padding: 8px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: 0 14px 32px #0008; }
+.workout-action-menu-button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 11px; color: var(--text); background: var(--surface-2); font-size: .9rem; font-weight: 800; text-align: left; }
+.workout-action-menu-button.is-save { color: #052e23; background: var(--accent); }
 .toast { position: fixed; right: 16px; bottom: 142px; left: 16px; z-index: 9; max-width: 480px; margin: auto; padding: 12px 14px; border-radius: 12px; background: #1e3a5f; box-shadow: 0 8px 30px #0008; }
 .is-hidden { display: none; }
 .history-list { list-style: none; padding: 0; margin: 0; }

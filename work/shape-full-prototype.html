@@ -1,0 +1,367 @@
+<div id="shape-full-prototype">
+  <style>
+    #shape-full-prototype {
+      --shape-bg: #0b1120;
+      --shape-surface: #111827;
+      --shape-surface-2: #1f2937;
+      --shape-line: #334155;
+      --shape-text: #f8fafc;
+      --shape-muted: #aab6c8;
+      --shape-accent: #34d399;
+      --shape-accent-ink: #052e23;
+      --shape-warning: #fbbf24;
+      width: min(100%, 400px);
+      margin: 0 auto;
+      color: var(--shape-text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    #shape-full-prototype * { box-sizing: border-box; }
+    #shape-full-prototype .shape-phone { position: relative; overflow: hidden; border: 1px solid var(--shape-line); border-radius: 30px; background: var(--shape-bg); box-shadow: 0 20px 45px rgba(0, 0, 0, .28); }
+    #shape-full-prototype .shape-header { display: flex; align-items: center; justify-content: space-between; min-height: 60px; padding: 16px 18px 12px; border-bottom: 1px solid var(--shape-line); background: var(--shape-surface); }
+    #shape-full-prototype .shape-brand { font-weight: 800; }
+    #shape-full-prototype .shape-brand span, #shape-full-prototype .shape-status, #shape-full-prototype .shape-eyebrow { color: var(--shape-accent); }
+    #shape-full-prototype .shape-status { font-size: 12px; font-weight: 700; }
+    #shape-full-prototype .shape-main { padding: 20px 16px 18px; }
+    #shape-full-prototype .shape-view[hidden], #shape-full-prototype [hidden] { display: none !important; }
+    #shape-full-prototype .shape-eyebrow { margin: 0 0 4px; font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+    #shape-full-prototype h2 { margin: 0; font-size: 23px; }
+    #shape-full-prototype h3 { margin: 0; font-size: 16px; }
+    #shape-full-prototype p { margin: 0; }
+    #shape-full-prototype .shape-copy, #shape-full-prototype .shape-small { color: var(--shape-muted); }
+    #shape-full-prototype .shape-copy { margin-top: 7px; font-size: 14px; line-height: 1.45; }
+    #shape-full-prototype .shape-small { font-size: 12px; line-height: 1.4; }
+    #shape-full-prototype .shape-card { margin-top: 12px; padding: 14px; border: 1px solid var(--shape-line); border-radius: 16px; background: var(--shape-surface); }
+    #shape-full-prototype .shape-card--accent { border-color: #1e8c75; background: linear-gradient(140deg, #12362f, var(--shape-surface)); }
+    #shape-full-prototype .shape-card--notice { border-left: 3px solid var(--shape-warning); }
+    #shape-full-prototype .shape-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    #shape-full-prototype .shape-pill { display: inline-block; padding: 4px 8px; border-radius: 99px; background: #14532d; color: #d1fae5; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    #shape-full-prototype .shape-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; color: var(--shape-muted); font-size: 12px; }
+    #shape-full-prototype .shape-meta span { padding: 3px 6px; border-radius: 8px; background: #1e3a5f; color: #dbeafe; }
+    #shape-full-prototype .shape-button { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; margin-top: 12px; padding: 9px 12px; border: 0; border-radius: 12px; background: var(--shape-accent); color: var(--shape-accent-ink); font: inherit; font-size: 14px; font-weight: 800; }
+    #shape-full-prototype .shape-button--block { width: 100%; }
+    #shape-full-prototype .shape-button--secondary { background: var(--shape-surface-2); color: var(--shape-text); }
+    #shape-full-prototype .shape-button--small { min-height: 36px; margin-top: 0; padding: 6px 9px; font-size: 12px; }
+    #shape-full-prototype .shape-button-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    #shape-full-prototype .shape-button-row .shape-button { flex: 1 1 140px; margin-top: 0; }
+    #shape-full-prototype .shape-select { width: 100%; min-height: 44px; margin-top: 12px; padding: 0 10px; border: 1px solid var(--shape-line); border-radius: 10px; background: var(--shape-surface-2); color: var(--shape-text); font: inherit; }
+    #shape-full-prototype .shape-exercise { position: relative; margin-top: 12px; padding: 14px; border: 1px solid var(--shape-line); border-radius: 16px; background: var(--shape-surface); }
+    #shape-full-prototype .shape-exercise.is-complete { border-color: #1e8c75; }
+    #shape-full-prototype .shape-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin-top: 12px; }
+    #shape-full-prototype .shape-field { min-width: 0; }
+    #shape-full-prototype .shape-field label { display: block; margin-bottom: 4px; color: var(--shape-muted); font-size: 10px; }
+    #shape-full-prototype .shape-input { width: 100%; min-height: 40px; padding: 6px 3px; border: 1px solid var(--shape-line); border-radius: 9px; background: #0f172a; color: var(--shape-text); font: inherit; font-size: 13px; text-align: center; }
+    #shape-full-prototype .shape-error { margin-top: 9px; color: #fecaca; font-size: 12px; }
+    #shape-full-prototype .shape-completed { margin-top: 16px; border: 1px solid var(--shape-line); border-radius: 14px; background: var(--shape-surface); }
+    #shape-full-prototype .shape-completed summary { padding: 14px; color: var(--shape-accent); font-size: 14px; font-weight: 800; cursor: pointer; }
+    #shape-full-prototype .shape-completed-content { padding: 0 10px 10px; }
+    #shape-full-prototype .shape-completed-content .shape-exercise { margin-bottom: 0; }
+    #shape-full-prototype .shape-actionbar { display: flex; justify-content: flex-end; padding: 10px 16px; background: transparent; }
+    #shape-full-prototype .shape-fab-wrap { position: relative; }
+    #shape-full-prototype .shape-fab { display: grid; width: 50px; height: 50px; place-items: center; border: 0; border-radius: 50%; background: var(--shape-accent); color: var(--shape-accent-ink); font: 28px/1 system-ui, sans-serif; }
+    #shape-full-prototype .shape-fab[aria-expanded="true"] { background: var(--shape-surface-2); color: var(--shape-text); }
+    #shape-full-prototype .shape-menu { position: absolute; right: 0; bottom: 60px; z-index: 4; display: grid; gap: 8px; width: 220px; padding: 8px; border: 1px solid var(--shape-line); border-radius: 16px; background: var(--shape-surface); box-shadow: 0 14px 32px rgba(0, 0, 0, .4); }
+    #shape-full-prototype .shape-menu-option { display: flex; align-items: center; gap: 9px; min-height: 44px; padding: 0 11px; border: 0; border-radius: 11px; background: var(--shape-surface-2); color: var(--shape-text); font: inherit; font-size: 13px; font-weight: 700; text-align: left; }
+    #shape-full-prototype .shape-menu-option--save { background: var(--shape-accent); color: var(--shape-accent-ink); }
+    #shape-full-prototype .shape-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 8px 12px max(10px, env(safe-area-inset-bottom)); border-top: 1px solid var(--shape-line); background: var(--shape-surface); }
+    #shape-full-prototype .shape-nav-button { min-height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--shape-muted); font: 700 13px/1 system-ui, sans-serif; }
+    #shape-full-prototype .shape-nav-button.is-active { background: #163d36; color: #61e1c1; }
+    #shape-full-prototype .shape-history { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+    #shape-full-prototype .shape-history-button { width: 100%; min-height: 58px; padding: 11px; border: 0; border-radius: 12px; background: var(--shape-surface-2); color: var(--shape-text); font: inherit; text-align: left; }
+    #shape-full-prototype .shape-history-exercise { padding: 10px 0; border-top: 1px solid var(--shape-line); color: var(--shape-muted); font-size: 12px; }
+    #shape-full-prototype .shape-version { margin-top: 10px; }
+    #shape-full-prototype .shape-version .shape-button { flex: 0 0 auto; }
+    #shape-full-prototype .shape-toast { min-height: 20px; margin-top: 12px; color: #dbeafe; font-size: 12px; }
+    #shape-full-prototype .shape-modal-backdrop { position: absolute; inset: 0; z-index: 8; display: grid; align-items: end; padding: 16px; background: rgba(2, 6, 23, .72); }
+    #shape-full-prototype .shape-modal { padding: 16px; border: 1px solid var(--shape-line); border-radius: 18px; background: var(--shape-surface); box-shadow: 0 18px 42px rgba(0, 0, 0, .45); }
+    #shape-full-prototype .shape-modal h3 { margin-bottom: 8px; }
+    #shape-full-prototype button:focus-visible, #shape-full-prototype input:focus-visible, #shape-full-prototype select:focus-visible { outline: 3px solid #60a5fa; outline-offset: 2px; }
+    @media (max-width: 355px) { #shape-full-prototype .shape-main { padding-inline: 12px; } #shape-full-prototype .shape-fields { gap: 5px; } }
+  </style>
+
+  <section class="shape-phone" aria-label="Protótipo navegável da aplicação Shape Treino">
+    <header class="shape-header"><span class="shape-brand">Shape <span>Treino</span></span><span id="shape-status" class="shape-status">Pronto offline</span></header>
+
+    <main class="shape-main">
+      <section id="shape-home" class="shape-view" aria-labelledby="shape-home-title">
+        <p class="shape-eyebrow">REGISTRO DE TREINO</p>
+        <h2 id="shape-home-title">Seu próximo treino</h2>
+        <p class="shape-copy">Registre repetições, carga e RIR final por exercício.</p>
+        <section id="shape-resume-card" class="shape-card shape-card--notice" hidden>
+          <strong>Treino em andamento: Push A</strong>
+          <p class="shape-small">Iniciado às 16:42.</p>
+          <button class="shape-button shape-button--block" type="button" data-action="resume">Retomar treino</button>
+        </section>
+        <section class="shape-card shape-card--accent">
+          <p class="shape-eyebrow">SUGERIDO PELA SEQUÊNCIA PPL</p>
+          <h3>Push A</h3>
+          <p class="shape-copy">Peito, ombros e tríceps · 7 exercícios</p>
+          <button class="shape-button shape-button--block" type="button" data-action="start">Iniciar Push A</button>
+        </section>
+        <section class="shape-card">
+          <h3>Escolher outro treino</h3>
+          <select class="shape-select" aria-label="Escolher treino"><option>Pull A — Costas e bíceps</option><option>Legs A — Pernas e glúteos</option></select>
+          <button class="shape-button shape-button--secondary shape-button--block" type="button" data-action="start">Iniciar treino selecionado</button>
+        </section>
+        <section class="shape-card">
+          <h3>Instalar no iPhone</h3>
+          <p class="shape-copy">No Safari, toque em Compartilhar e escolha “Adicionar à Tela de Início”.</p>
+        </section>
+      </section>
+
+      <section id="shape-workout" class="shape-view" aria-labelledby="shape-workout-title" hidden>
+        <p class="shape-eyebrow">EM ANDAMENTO · 16:42</p>
+        <h2 id="shape-workout-title">Push A</h2>
+        <p class="shape-copy">Preencha o resultado final e conclua cada exercício.</p>
+        <div id="shape-pending-exercises">
+          <section class="shape-exercise" data-exercise-card data-exercise="Supino inclinado">
+            <div class="shape-row"><h3>1. Supino inclinado</h3><span class="shape-pill">3 séries</span></div>
+            <div class="shape-meta"><span>6–10 reps</span><span>RIR alvo 2</span><span>2 min</span></div>
+            <div class="shape-fields"><div class="shape-field"><label>Repetições</label><input class="shape-input" data-field="reps" type="number" min="1" placeholder="10"></div><div class="shape-field"><label>Carga (kg)</label><input class="shape-input" data-field="weight" type="number" min="0" placeholder="40"></div><div class="shape-field"><label>RIR final</label><input class="shape-input" data-field="rir" type="number" min="0" max="5" placeholder="2"></div></div>
+            <p class="shape-error" role="alert" hidden>Preencha repetições, carga e RIR antes de concluir.</p>
+            <button class="shape-button shape-button--secondary shape-button--small" type="button" data-action="toggle-exercise">Concluir exercício</button>
+          </section>
+          <section class="shape-exercise" data-exercise-card data-exercise="Supino reto na máquina">
+            <div class="shape-row"><h3>2. Supino reto na máquina</h3><span class="shape-pill">3 séries</span></div>
+            <div class="shape-meta"><span>8–12 reps</span><span>RIR alvo 2</span><span>2 min</span></div>
+            <div class="shape-fields"><div class="shape-field"><label>Repetições</label><input class="shape-input" data-field="reps" type="number" min="1" placeholder="12"></div><div class="shape-field"><label>Carga (kg)</label><input class="shape-input" data-field="weight" type="number" min="0" placeholder="35"></div><div class="shape-field"><label>RIR final</label><input class="shape-input" data-field="rir" type="number" min="0" max="5" placeholder="2"></div></div>
+            <p class="shape-error" role="alert" hidden>Preencha repetições, carga e RIR antes de concluir.</p>
+            <button class="shape-button shape-button--secondary shape-button--small" type="button" data-action="toggle-exercise">Concluir exercício</button>
+          </section>
+          <section class="shape-exercise" data-exercise-card data-exercise="Crucifixo no cabo">
+            <div class="shape-row"><h3>3. Crucifixo no cabo</h3><span class="shape-pill">3 séries</span></div>
+            <div class="shape-meta"><span>10–15 reps</span><span>RIR alvo 1–2</span><span>90 s</span></div>
+            <div class="shape-fields"><div class="shape-field"><label>Repetições</label><input class="shape-input" data-field="reps" type="number" min="1" placeholder="14"></div><div class="shape-field"><label>Carga (kg)</label><input class="shape-input" data-field="weight" type="number" min="0" placeholder="15"></div><div class="shape-field"><label>RIR final</label><input class="shape-input" data-field="rir" type="number" min="0" max="5" placeholder="1"></div></div>
+            <p class="shape-error" role="alert" hidden>Preencha repetições, carga e RIR antes de concluir.</p>
+            <button class="shape-button shape-button--secondary shape-button--small" type="button" data-action="toggle-exercise">Concluir exercício</button>
+          </section>
+          <section class="shape-exercise" data-exercise-card data-exercise="Tríceps na corda">
+            <div class="shape-row"><h3>4. Tríceps na corda</h3><span class="shape-pill">3 séries</span></div>
+            <div class="shape-meta"><span>10–15 reps</span><span>RIR alvo 1–2</span><span>90 s</span></div>
+            <div class="shape-fields"><div class="shape-field"><label>Repetições</label><input class="shape-input" data-field="reps" type="number" min="1" placeholder="12"></div><div class="shape-field"><label>Carga (kg)</label><input class="shape-input" data-field="weight" type="number" min="0" placeholder="30"></div><div class="shape-field"><label>RIR final</label><input class="shape-input" data-field="rir" type="number" min="0" max="5" placeholder="2"></div></div>
+            <p class="shape-error" role="alert" hidden>Preencha repetições, carga e RIR antes de concluir.</p>
+            <button class="shape-button shape-button--secondary shape-button--small" type="button" data-action="toggle-exercise">Concluir exercício</button>
+          </section>
+        </div>
+        <details id="shape-completed" class="shape-completed" hidden><summary id="shape-completed-summary">Exercícios concluídos (0)</summary><div id="shape-completed-content" class="shape-completed-content"></div></details>
+      </section>
+
+      <section id="shape-history" class="shape-view" aria-labelledby="shape-history-title" hidden>
+        <p class="shape-eyebrow">HISTÓRICO LOCAL</p>
+        <h2 id="shape-history-title">Treinos concluídos</h2>
+        <p id="shape-history-copy" class="shape-copy">Nenhum registro salvo neste iPhone.</p>
+        <section id="shape-history-empty" class="shape-card"><p>Nenhum treino concluído ainda.</p></section>
+        <ul id="shape-history-list" class="shape-history" hidden><li><button id="shape-history-record" class="shape-history-button" type="button"><strong>Push A</strong><br><span class="shape-small">Hoje, 17:08</span></button></li></ul>
+        <section id="shape-history-detail" class="shape-card" hidden>
+          <div class="shape-row"><h3>Push A</h3><button class="shape-button shape-button--secondary shape-button--small" type="button" data-action="close-history">Fechar</button></div>
+          <p class="shape-small">Hoje, 17:08</p>
+          <div class="shape-history-exercise"><strong>Supino inclinado</strong><br>10 reps · 40 kg · RIR 2</div>
+          <div class="shape-history-exercise"><strong>Supino reto na máquina</strong><br>12 reps · 35 kg · RIR 2</div>
+          <div class="shape-history-exercise"><strong>Crucifixo no cabo</strong><br>14 reps · 15 kg · RIR 1</div>
+          <div class="shape-history-exercise"><strong>Tríceps na corda</strong><br>12 reps · 30 kg · RIR 2</div>
+        </section>
+      </section>
+
+      <section id="shape-data" class="shape-view" aria-labelledby="shape-data-title" hidden>
+        <p class="shape-eyebrow">DADOS NO APARELHO</p>
+        <h2 id="shape-data-title">Backup e restauração</h2>
+        <p class="shape-copy">Proteja seu histórico na pasta privada da app no Google Drive.</p>
+        <section class="shape-card">
+          <h3>Backup Google</h3>
+          <p id="shape-google-status" class="shape-copy">Google ainda não conectado</p>
+          <div class="shape-button-row"><button id="shape-google-connect" class="shape-button" type="button">Conectar ao Google</button><button id="shape-google-backup" class="shape-button shape-button--secondary" type="button" hidden>Fazer backup agora</button></div>
+          <button id="shape-google-list" class="shape-button shape-button--secondary shape-button--block" type="button" hidden>Listar versões</button>
+        </section>
+        <section id="shape-versions" class="shape-card" hidden>
+          <h3>Versões no Google Drive</h3>
+          <div class="shape-row shape-version"><span class="shape-small">Hoje, 17:08<br>12 KB</span><button class="shape-button shape-button--secondary shape-button--small" type="button" data-action="restore">Restaurar</button></div>
+          <div class="shape-row shape-version"><span class="shape-small">Ontem, 19:42<br>11 KB</span><button class="shape-button shape-button--secondary shape-button--small" type="button" data-action="restore">Restaurar</button></div>
+        </section>
+        <section class="shape-card"><h3>Exportar arquivo local</h3><p class="shape-copy">Guarde um JSON em Arquivos ou iCloud Drive.</p><button class="shape-button shape-button--secondary shape-button--block" type="button" data-action="export">Exportar JSON</button></section>
+        <section class="shape-card"><h3>Importar arquivo local</h3><p class="shape-copy">A importação substitui os registros locais existentes.</p><button class="shape-button shape-button--secondary shape-button--block" type="button" data-action="import">Selecionar arquivo JSON</button></section>
+      </section>
+      <p id="shape-toast" class="shape-toast" aria-live="polite"></p>
+    </main>
+
+    <footer id="shape-workout-actions" class="shape-actionbar" hidden>
+      <div class="shape-fab-wrap">
+        <div id="shape-action-menu" class="shape-menu" hidden>
+          <button class="shape-menu-option shape-menu-option--save" type="button" data-action="finish"><i data-lucide="check" aria-hidden="true"></i> Concluir e salvar</button>
+          <button class="shape-menu-option" type="button" data-action="back"><i data-lucide="arrow-left" aria-hidden="true"></i> Voltar sem concluir</button>
+        </div>
+        <button id="shape-action-toggle" class="shape-fab" type="button" aria-label="Abrir ações do treino" aria-expanded="false" aria-controls="shape-action-menu">+</button>
+      </div>
+    </footer>
+
+    <nav class="shape-nav" aria-label="Navegação principal">
+      <button class="shape-nav-button is-active" type="button" data-view="home" aria-current="page">Início</button>
+      <button class="shape-nav-button" type="button" data-view="history">Histórico</button>
+      <button class="shape-nav-button" type="button" data-view="data">Dados</button>
+    </nav>
+    <div id="shape-modal-backdrop" class="shape-modal-backdrop" hidden>
+      <section class="shape-modal" role="dialog" aria-modal="true" aria-labelledby="shape-modal-title">
+        <h3 id="shape-modal-title">Confirmação</h3>
+        <p id="shape-modal-copy" class="shape-copy"></p>
+        <div class="shape-button-row"><button class="shape-button shape-button--secondary" type="button" data-action="cancel-modal">Cancelar</button><button id="shape-modal-confirm" class="shape-button" type="button">Confirmar</button></div>
+      </section>
+    </div>
+  </section>
+
+  <script>
+    const root = document.getElementById('shape-full-prototype');
+    const views = root.querySelectorAll('.shape-view');
+    const navButtons = root.querySelectorAll('[data-view]');
+    const workoutActions = root.querySelector('#shape-workout-actions');
+    const actionToggle = root.querySelector('#shape-action-toggle');
+    const actionMenu = root.querySelector('#shape-action-menu');
+    const completed = root.querySelector('#shape-completed');
+    const completedContent = root.querySelector('#shape-completed-content');
+    const completedSummary = root.querySelector('#shape-completed-summary');
+    const pendingExercises = root.querySelector('#shape-pending-exercises');
+    const resumeCard = root.querySelector('#shape-resume-card');
+    const toast = root.querySelector('#shape-toast');
+    const modalBackdrop = root.querySelector('#shape-modal-backdrop');
+    const modalTitle = root.querySelector('#shape-modal-title');
+    const modalCopy = root.querySelector('#shape-modal-copy');
+    const modalConfirm = root.querySelector('#shape-modal-confirm');
+    const historyEmpty = root.querySelector('#shape-history-empty');
+    const historyList = root.querySelector('#shape-history-list');
+    const historyDetail = root.querySelector('#shape-history-detail');
+    const historyCopy = root.querySelector('#shape-history-copy');
+    const googleStatus = root.querySelector('#shape-google-status');
+    const googleConnect = root.querySelector('#shape-google-connect');
+    const googleBackup = root.querySelector('#shape-google-backup');
+    const googleList = root.querySelector('#shape-google-list');
+    const versions = root.querySelector('#shape-versions');
+    const state = { currentView: 'home', hasDraft: false, hasHistory: false, modalAction: null, googleConnected: false };
+
+    function showToast(text) {
+      toast.textContent = text;
+      clearTimeout(showToast.timeout);
+      showToast.timeout = setTimeout(() => { toast.textContent = ''; }, 3200);
+    }
+
+    function showView(view) {
+      state.currentView = view;
+      views.forEach((item) => { item.hidden = item.id !== `shape-${view}`; });
+      workoutActions.hidden = view !== 'workout';
+      if (view !== 'workout') closeActionMenu();
+      navButtons.forEach((button) => {
+        const active = button.dataset.view === view || (view === 'workout' && button.dataset.view === 'home');
+        button.classList.toggle('is-active', active);
+        if (active) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current');
+      });
+    }
+
+    function closeActionMenu() {
+      actionMenu.hidden = true;
+      actionToggle.setAttribute('aria-expanded', 'false');
+      actionToggle.setAttribute('aria-label', 'Abrir ações do treino');
+      actionToggle.textContent = '+';
+    }
+
+    function updateCompleted() {
+      const count = completedContent.querySelectorAll('[data-exercise-card]').length;
+      completed.hidden = count === 0;
+      completedSummary.textContent = `Exercícios concluídos (${count})`;
+    }
+
+    function openModal(title, copy, action) {
+      state.modalAction = action;
+      modalTitle.textContent = title;
+      modalCopy.textContent = copy;
+      modalBackdrop.hidden = false;
+    }
+
+    function closeModal() {
+      modalBackdrop.hidden = true;
+      state.modalAction = null;
+    }
+
+    function saveWorkout() {
+      state.hasHistory = true;
+      state.hasDraft = false;
+      resumeCard.hidden = true;
+      historyEmpty.hidden = true;
+      historyList.hidden = false;
+      historyCopy.textContent = '1 registro salvo neste iPhone.';
+      showView('home');
+      showToast('Treino salvo no histórico.');
+    }
+
+    function setGoogleConnected() {
+      state.googleConnected = true;
+      googleStatus.textContent = 'Backup conectado · último backup hoje, 17:08';
+      googleConnect.textContent = 'Autorizar Google novamente';
+      googleBackup.hidden = false;
+      googleList.hidden = false;
+      showToast('Google conectado e primeiro backup criado.');
+    }
+
+    root.addEventListener('click', (event) => {
+      const viewButton = event.target.closest('[data-view]');
+      if (viewButton) { showView(viewButton.dataset.view); return; }
+      const actionButton = event.target.closest('[data-action]');
+      if (!actionButton) return;
+      const action = actionButton.dataset.action;
+      if (action === 'start' || action === 'resume') { showView('workout'); }
+      else if (action === 'toggle-exercise') {
+        const card = actionButton.closest('[data-exercise-card]');
+        const isComplete = card.classList.contains('is-complete');
+        if (!isComplete) {
+          const valid = [...card.querySelectorAll('[data-field]')].every((input) => {
+            const value = Number(input.value);
+            if (input.value === '' || !Number.isFinite(value)) return false;
+            if (input.dataset.field === 'reps') return Number.isInteger(value) && value > 0;
+            if (input.dataset.field === 'weight') return value >= 0;
+            return Number.isInteger(value) && value >= 0;
+          });
+          const error = card.querySelector('.shape-error');
+          if (!valid) { error.hidden = false; return; }
+          error.hidden = true;
+          card.classList.add('is-complete');
+          actionButton.textContent = 'Desmarcar';
+          completedContent.append(card);
+          updateCompleted();
+        } else {
+          card.classList.remove('is-complete');
+          actionButton.textContent = 'Concluir exercício';
+          pendingExercises.append(card);
+          updateCompleted();
+        }
+      }
+      else if (action === 'finish') {
+        closeActionMenu();
+        if (root.querySelectorAll('[data-exercise-card].is-complete').length !== 4) { showToast('Conclua os quatro exercícios antes de finalizar.'); return; }
+        openModal('Salvar treino?', 'O treino será adicionado ao Histórico.', 'save');
+      }
+      else if (action === 'back') { closeActionMenu(); openModal('Voltar sem concluir?', 'O treino continuará disponível para retomar.', 'back'); }
+      else if (action === 'close-history') { historyDetail.hidden = true; }
+      else if (action === 'restore') { openModal('Restaurar esta versão?', 'Todos os dados locais serão substituídos.', 'restore'); }
+      else if (action === 'export') { showToast('Exportação JSON simulada.'); }
+      else if (action === 'import') { openModal('Importar arquivo?', 'Os registros locais atuais serão substituídos.', 'import'); }
+      else if (action === 'cancel-modal') { closeModal(); }
+    });
+
+    actionToggle.addEventListener('click', () => {
+      const expanded = actionToggle.getAttribute('aria-expanded') === 'true';
+      actionMenu.hidden = expanded;
+      actionToggle.setAttribute('aria-expanded', String(!expanded));
+      actionToggle.setAttribute('aria-label', expanded ? 'Abrir ações do treino' : 'Fechar ações do treino');
+      actionToggle.textContent = expanded ? '+' : '×';
+    });
+
+    modalConfirm.addEventListener('click', () => {
+      const action = state.modalAction;
+      closeModal();
+      if (action === 'save') saveWorkout();
+      else if (action === 'back') { state.hasDraft = true; resumeCard.hidden = false; showView('home'); showToast('Treino mantido para retomar.'); }
+      else if (action === 'restore') showToast('Restauração simulada concluída.');
+      else if (action === 'import') showToast('Importação simulada concluída.');
+    });
+
+    root.querySelector('#shape-history-record').addEventListener('click', () => { historyDetail.hidden = false; });
+    googleConnect.addEventListener('click', setGoogleConnected);
+    googleBackup.addEventListener('click', () => { if (state.googleConnected) { googleStatus.textContent = 'Backup conectado · último backup agora'; showToast('Backup Google concluído.'); } });
+    googleList.addEventListener('click', () => { if (state.googleConnected) { versions.hidden = false; showToast('Versões do Google Drive atualizadas.'); } });
+  </script>
+</div>

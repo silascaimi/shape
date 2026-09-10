@@ -144,7 +144,7 @@ function renderWorkout() {
     <section class="screen-heading"><p class="eyebrow">Em andamento · ${dateTime(workout.startedAt)}</p><h1>${html(workout.workoutName)}</h1><p class="muted">Registre as repetições, a carga e o RIR final de cada exercício.</p></section>
     ${pending.map(({ exercise, index }) => renderExerciseCard(exercise, index)).join('')}
     ${completed.length ? `<details class="completed-exercises"><summary>Exercícios concluídos (${completed.length})</summary><div class="completed-exercises-content">${completed.map(({ exercise, index }) => renderExerciseCard(exercise, index)).join('')}</div></details>` : ''}
-    <section class="workout-actions" aria-label="Ações do treino"><button class="icon-button" data-finish aria-label="Concluir e salvar treino" title="Concluir e salvar treino">✓</button><button class="icon-button secondary" data-home aria-label="Voltar sem concluir" title="Voltar sem concluir">←</button></section>`;
+    <section class="workout-actions" aria-label="Ações do treino"><div class="workout-actions-wrap"><div id="workout-action-menu" class="workout-action-menu" hidden><button class="workout-action-menu-button is-save" data-finish><span aria-hidden="true">✓</span> Concluir e salvar</button><button class="workout-action-menu-button" data-home><span aria-hidden="true">←</span> Voltar sem concluir</button></div><button class="workout-actions-toggle" data-workout-actions-toggle aria-expanded="false" aria-controls="workout-action-menu" aria-label="Abrir ações do treino" title="Abrir ações do treino">+</button></div></section>`;
 }
 
 function renderHistory() {
@@ -300,6 +300,15 @@ app.addEventListener('click', async (event) => {
   if (button.dataset.resume !== undefined) { state.view = 'workout'; render(); }
   else if (button.dataset.start) await start(button.dataset.start);
   else if (button.dataset.startSelected !== undefined) await start(document.querySelector('#workout-picker').value);
+  else if (button.dataset.workoutActionsToggle !== undefined) {
+    const menu = document.querySelector('#workout-action-menu');
+    const isOpen = !menu.hidden;
+    menu.hidden = isOpen;
+    button.setAttribute('aria-expanded', String(!isOpen));
+    button.setAttribute('aria-label', isOpen ? 'Abrir ações do treino' : 'Fechar ações do treino');
+    button.setAttribute('title', isOpen ? 'Abrir ações do treino' : 'Fechar ações do treino');
+    button.textContent = isOpen ? '+' : '×';
+  }
   else if (button.dataset.home !== undefined) { state.view = 'home'; render(); }
   else if (button.dataset.toggle !== undefined) await toggle(Number(button.dataset.index));
   else if (button.dataset.copy !== undefined) await copyLast(Number(button.dataset.index));
