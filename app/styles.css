@@ -23,7 +23,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .brand { color: var(--text); font-size: 1.1rem; font-weight: 800; text-decoration: none; }
 .brand span { color: var(--accent); }
 .connection-status { color: var(--accent); font-size: .8rem; font-weight: 700; }
-main { flex: 1; width: 100%; max-width: 720px; min-height: calc(100dvh - 58px); margin: 0 auto; padding: 20px 16px calc(104px + env(safe-area-inset-bottom)); }
+main { flex: 1; width: 100%; max-width: 720px; min-height: calc(100dvh - 58px); margin: 0 auto; padding: 20px 16px calc(124px + env(safe-area-inset-bottom)); }
 h1 { margin: 0 0 6px; font-size: 1.65rem; }
 h2 { margin: 0; font-size: 1.15rem; }
 h3 { margin: 0; font-size: 1rem; }
@@ -42,8 +42,9 @@ p { line-height: 1.5; }
 .button-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
 .button-row .button { flex: 1 1 140px; margin: 0; }
 .session-picker { width: 100%; min-height: 48px; margin-top: 12px; padding: 0 12px; color: var(--text); border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
-.bottom-nav { position: fixed; right: 0; bottom: 0; left: 0; z-index: 5; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 8px 14px max(8px, env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: rgba(17, 24, 39, .98); }
-.bottom-nav button { min-height: 42px; color: var(--muted); background: transparent; font-size: .85rem; font-weight: 700; }
+.bottom-nav { position: fixed; bottom: max(12px, env(safe-area-inset-bottom)); left: 50%; z-index: 5; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; width: min(calc(100% - 28px), 420px); padding: 6px; border: 1px solid var(--line); border-radius: 22px; background: rgba(17, 24, 39, .96); box-shadow: 0 12px 30px #0008; backdrop-filter: blur(12px); transform: translateX(-50%); }
+.bottom-nav button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 54px; padding: 5px; border-radius: 16px; color: var(--muted); background: transparent; font-size: .72rem; font-weight: 700; }
+.bottom-nav .nav-icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
 .bottom-nav button.is-active { color: var(--accent); background: #12332c; }
 .exercise-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
 .exercise-card.is-complete { border-color: var(--accent-strong); }
@@ -60,7 +61,7 @@ p { line-height: 1.5; }
 .completed-exercises summary { padding: 14px 16px; color: var(--accent); cursor: pointer; font-weight: 800; }
 .completed-exercises-content { padding: 0 12px 12px; }
 .completed-exercises-content .exercise-card { margin-bottom: 0; }
-.workout-actions { position: sticky; bottom: calc(82px + env(safe-area-inset-bottom)); z-index: 3; display: flex; justify-content: flex-end; margin-top: 18px; padding: 10px 0; pointer-events: none; }
+.workout-actions { position: sticky; bottom: calc(98px + env(safe-area-inset-bottom)); z-index: 3; display: flex; justify-content: flex-end; margin-top: 18px; padding: 10px 0; pointer-events: none; }
 .workout-actions-wrap { position: relative; pointer-events: auto; }
 .workout-actions-toggle { display: grid; width: 48px; min-width: 48px; min-height: 48px; padding: 0; place-items: center; border-radius: 50%; color: #052e23; background: var(--accent); font-size: 1.6rem; font-weight: 900; }
 .workout-actions-toggle[aria-expanded="true"] { color: var(--text); background: var(--surface-2); }
@@ -68,7 +69,7 @@ p { line-height: 1.5; }
 .workout-action-menu[hidden] { display: none; }
 .workout-action-menu-button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 11px; color: var(--text); background: var(--surface-2); font-size: .9rem; font-weight: 800; text-align: left; }
 .workout-action-menu-button.is-save { color: #052e23; background: var(--accent); }
-.toast { position: fixed; right: 16px; bottom: 142px; left: 16px; z-index: 9; max-width: 480px; margin: auto; padding: 12px 14px; border-radius: 12px; background: #1e3a5f; box-shadow: 0 8px 30px #0008; }
+.toast { position: fixed; right: 16px; bottom: calc(104px + env(safe-area-inset-bottom)); left: 16px; z-index: 9; max-width: 480px; margin: auto; padding: 12px 14px; border-radius: 12px; background: #1e3a5f; box-shadow: 0 8px 30px #0008; }
 .is-hidden { display: none; }
 .history-list { list-style: none; padding: 0; margin: 0; }
 .history-list li { margin-top: 10px; }

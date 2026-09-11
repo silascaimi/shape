@@ -6,6 +6,8 @@ import { isGoogleConfigured, selectBackupsForDeletion } from '../google-drive.mj
 
 const markdown = await readFile(new URL('../../docs/01-treino.md', import.meta.url), 'utf8');
 const appSource = await readFile(new URL('../app.mjs', import.meta.url), 'utf8');
+const indexSource = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+const styleSource = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
 
 assert.equal(WORKOUTS.length, 6, 'O app deve ter seis sessões.');
 for (const workout of WORKOUTS) {
@@ -30,6 +32,8 @@ assert.match(appSource, /workout-actions-toggle/);
 assert.match(appSource, /workout-action-menu/);
 assert.doesNotMatch(appSource, /icon-button/);
 assert.doesNotMatch(appSource, /createSeries|data-series-index|Série extra|data-rest(?=[\s=>])|beginRest|timerId/);
+assert.match(indexSource, /class="nav-icon"/);
+assert.match(styleSource, /\.bottom-nav \{[^}]*border-radius: 22px/s);
 
 const legsA = WORKOUTS.find((workout) => workout.id === 'legs-a');
 assert.ok(legsA.exercises.some((exercise) => exercise.id === 'cadeira-abdutora'));

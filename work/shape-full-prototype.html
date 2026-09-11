@@ -62,8 +62,9 @@
     #shape-full-prototype .shape-menu { position: absolute; right: 0; bottom: 60px; z-index: 4; display: grid; gap: 8px; width: 220px; padding: 8px; border: 1px solid var(--shape-line); border-radius: 16px; background: var(--shape-surface); box-shadow: 0 14px 32px rgba(0, 0, 0, .4); }
     #shape-full-prototype .shape-menu-option { display: flex; align-items: center; gap: 9px; min-height: 44px; padding: 0 11px; border: 0; border-radius: 11px; background: var(--shape-surface-2); color: var(--shape-text); font: inherit; font-size: 13px; font-weight: 700; text-align: left; }
     #shape-full-prototype .shape-menu-option--save { background: var(--shape-accent); color: var(--shape-accent-ink); }
-    #shape-full-prototype .shape-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 8px 12px max(10px, env(safe-area-inset-bottom)); border-top: 1px solid var(--shape-line); background: var(--shape-surface); }
-    #shape-full-prototype .shape-nav-button { min-height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--shape-muted); font: 700 13px/1 system-ui, sans-serif; }
+    #shape-full-prototype .shape-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 0 14px max(12px, env(safe-area-inset-bottom)); padding: 6px; border: 1px solid var(--shape-line); border-radius: 22px; background: rgba(17, 24, 39, .96); box-shadow: 0 12px 30px rgba(0, 0, 0, .4); }
+    #shape-full-prototype .shape-nav-button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 54px; padding: 5px; border: 0; border-radius: 16px; background: transparent; color: var(--shape-muted); font: 700 11px/1 system-ui, sans-serif; }
+    #shape-full-prototype .shape-nav-button svg { width: 20px; height: 20px; }
     #shape-full-prototype .shape-nav-button.is-active { background: #163d36; color: #61e1c1; }
     #shape-full-prototype .shape-history { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
     #shape-full-prototype .shape-history-button { width: 100%; min-height: 58px; padding: 11px; border: 0; border-radius: 12px; background: var(--shape-surface-2); color: var(--shape-text); font: inherit; text-align: left; }
@@ -193,9 +194,9 @@
     </footer>
 
     <nav class="shape-nav" aria-label="Navegação principal">
-      <button class="shape-nav-button is-active" type="button" data-view="home" aria-current="page">Início</button>
-      <button class="shape-nav-button" type="button" data-view="history">Histórico</button>
-      <button class="shape-nav-button" type="button" data-view="data">Dados</button>
+      <button class="shape-nav-button is-active" type="button" data-view="home" aria-current="page"><i data-lucide="house" aria-hidden="true"></i><span>Início</span></button>
+      <button class="shape-nav-button" type="button" data-view="history"><i data-lucide="history" aria-hidden="true"></i><span>Histórico</span></button>
+      <button class="shape-nav-button" type="button" data-view="data"><i data-lucide="database" aria-hidden="true"></i><span>Dados</span></button>
     </nav>
     <div id="shape-modal-backdrop" class="shape-modal-backdrop" hidden>
       <section class="shape-modal" role="dialog" aria-modal="true" aria-labelledby="shape-modal-title">
