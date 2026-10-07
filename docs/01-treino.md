@@ -6,8 +6,8 @@
 - Faça 5–8 minutos de aquecimento leve e 1–3 séries de aproximação antes do primeiro exercício composto; elas não contam como séries de trabalho.
 - **RIR** = repetições que ainda seriam possíveis com técnica segura. Nas semanas 1–3, mantenha RIR 2–3. Depois, use RIR 1–2 nas séries de trabalho; não é necessário falhar.
 - Descanse 2 min nos exercícios compostos e 60–90 s nos isoladores. Para caber em 60 min, combine apenas isoladores que não disputem o mesmo grupo muscular.
-- Se o aparelho preferido estiver indisponível, use a substituição da mesma linha; não pule o padrão de movimento.
-- Cada sessão tem sete exercícios e 15–17 séries de trabalho. Se ela ultrapassar 60 min em duas semanas seguidas, reduza uma série de um isolador novo antes de remover um exercício principal.
+- Se máquina, polia, banco ou estação preferidos estiverem indisponíveis, use a substituição da mesma linha; não pule o padrão de movimento. A alternativa deve usar um recurso independente: trocar apenas a pegada ou o acessório da mesma estação não resolve a indisponibilidade.
+- Cada sessão tem sete exercícios e 15–17 séries de trabalho, exceto o Pull B, que tem oito exercícios e 19 séries para incluir encolhimento. O Pull B pode ultrapassar 60 min; se isso ocorrer em duas semanas seguidas, reduza uma série de um isolador novo antes de remover um exercício principal.
 
 ## Superséries permitidas
 
@@ -32,17 +32,17 @@ Mantenha a carga até realizar o limite superior de repetições em todas as sé
 | Supino máquina reto | 2 × 8–12 | 2 min | 2 | Supino reto com halteres |
 | Desenvolvimento sentado com halteres | 2 × 8–12 | 2 min | 2 | Desenvolvimento em máquina |
 | Elevação lateral com halteres | 3 × 12–20 | 60–90 s | 2 | Elevação lateral no cabo |
-| Tríceps na polia com barra V | 3 × 10–15 | 60–90 s | 1–2 | Tríceps na polia com corda |
+| Tríceps na polia com barra V | 3 × 10–15 | 60–90 s | 1–2 | Tríceps francês com halter |
 | Crucifixo no cabo ou peck deck | 2 × 12–15 | 60–90 s | 1–2 | Crucifixo com halteres leve |
-| Tríceps francês no cabo | 2 × 10–15 | 60–90 s | 1–2 | Tríceps testa na polia |
+| Tríceps francês no cabo | 2 × 10–15 | 60–90 s | 1–2 | Tríceps testa com barra W e banco |
 
 ## Pull A
 
 | Exercício | Séries × repetições | Descanso | RIR | Substituto Smart Fit |
 | --- | ---: | ---: | ---: | --- |
-| Puxada frontal na polia | 3 × 8–12 | 2 min | 2 | Puxada com pegada neutra |
+| Puxada frontal na polia | 3 × 8–12 | 2 min | 2 | Barra fixa pronada, assistida se necessário |
 | Remada máquina neutra | 3 × 8–12 | 2 min | 2 | Remada baixa no cabo |
-| Remada unilateral com halter apoiado | 2 × 10–15 | 90 s | 2 | Remada articulada, se houver |
+| Remada articulada | 2 × 10–15 | 90 s | 2 | Remada unilateral com halter apoiado |
 | Crucifixo inverso na máquina | 3 × 12–20 | 60–90 s | 2 | Face pull no cabo |
 | Rosca direta na polia | 2 × 10–15 | 60–90 s | 1–2 | Rosca direta com barra W |
 | Pullover no cabo | 2 × 10–15 | 90 s | 2 | Pullover com halter no banco |
@@ -68,18 +68,19 @@ Mantenha a carga até realizar o limite superior de repetições em todas as sé
 | Peck deck ou crucifixo no cabo | 2 × 12–15 | 60–90 s | 1–2 | Crucifixo com halteres leve |
 | Desenvolvimento em máquina | 2 × 8–12 | 2 min | 2 | Desenvolvimento sentado com halteres |
 | Elevação lateral no cabo ou halteres | 3 × 12–20 | 60–90 s | 2 | Máquina de elevação lateral, se houver |
-| Tríceps testa na polia | 3 × 10–15 | 60–90 s | 1–2 | Tríceps francês no cabo |
-| Crossover no cabo | 2 × 12–15 | 60–90 s | 1–2 | Peck deck |
-| Tríceps na polia com corda | 2 × 10–15 | 60–90 s | 1–2 | Tríceps na polia com barra V |
+| Tríceps testa na polia | 3 × 10–15 | 60–90 s | 1–2 | Tríceps francês com halter |
+| Crossover no cabo | 2 × 12–15 | 60–90 s | 1–2 | Crucifixo com halteres leve |
+| Tríceps na polia com corda | 2 × 10–15 | 60–90 s | 1–2 | Tríceps testa com barra W e banco |
 
 ## Pull B
 
 | Exercício | Séries × repetições | Descanso | RIR | Substituto Smart Fit |
 | --- | ---: | ---: | ---: | --- |
-| Puxada com triângulo | 3 × 8–12 | 2 min | 2 | Puxada frontal com pegada neutra |
+| Puxada com triângulo | 3 × 8–12 | 2 min | 2 | Barra fixa supinada, assistida se necessário |
 | Remada baixa no cabo | 3 × 8–12 | 2 min | 2 | Remada máquina neutra |
 | Pullover no cabo | 2 × 10–15 | 90 s | 2 | Pullover com halter no banco |
 | Face pull no cabo | 2 × 12–20 | 60–90 s | 2 | Crucifixo inverso na máquina |
+| Encolhimento com halteres | 2 × 10–15 | 60–90 s | 1–2 | Encolhimento no smith |
 | Rosca Scott em máquina | 3 × 10–15 | 60–90 s | 1–2 | Rosca Scott com barra W |
 | Rosca martelo com halteres | 2 × 10–15 | 60–90 s | 1–2 | Rosca martelo com corda no cabo |
 | Rosca inversa na polia | 2 × 12–15 | 60–90 s | 1–2 | Rosca inversa com barra W |
@@ -89,12 +90,12 @@ Mantenha a carga até realizar o limite superior de repetições em todas as sé
 | Exercício | Séries × repetições | Descanso | RIR | Substituto Smart Fit |
 | --- | ---: | ---: | ---: | --- |
 | Levantamento romeno com halteres | 3 × 6–10 | 2 min | 2 | Levantamento romeno no smith |
-| Cadeira ou mesa flexora | 3 × 10–15 | 90 s | 1–2 | Flexora disponível na unidade |
-| Afundo búlgaro com halteres | 2 × 8–12/lado | 2 min | 2 | Leg press unilateral |
+| Mesa flexora | 3 × 10–15 | 90 s | 1–2 | Cadeira flexora |
+| Leg press unilateral | 2 × 8–12/lado | 2 min | 2 | Afundo búlgaro com halteres |
 | Cadeira abdutora | 2 × 12–20 | 60–90 s | 1–2 | Abdução no cabo |
 | Panturrilha no leg press | 3 × 10–15 | 60–90 s | 1–2 | Panturrilha em pé com halteres |
-| Dead bug | 2 × 8–12/lado | 60 s | — | Prancha lateral, 2 × 20–45 s/lado |
-| Elevação pélvica | 2 × 8–12 | 90 s | 1–2 | Elevação pélvica no smith ou com halter |
+| Coice de glúteo na máquina | 2 × 10–15/lado | 60–90 s | 1–2 | Extensão de quadril em quatro apoios com caneleira |
+| Extensão lombar a 45° com foco em glúteos | 2 × 10–15 | 90 s | 1–2 | Ponte de glúteos no chão com halter |
 
 ## Registro de sessão
 

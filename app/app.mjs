@@ -1,4 +1,4 @@
-import { WORKOUT_SEQUENCE, WORKOUTS, getWorkout } from './training-plan.mjs';
+import { WORKOUT_SEQUENCE, WORKOUTS, findLastExercise, getWorkout } from './training-plan.mjs';
 import { deleteItem, exportBackup, getAllWorkouts, getItem, importBackup, normalizeDraft, normalizeWorkout, putItem } from './db.mjs';
 import { downloadGoogleBackup, hasActiveGoogleToken, isGoogleConfigured, listGoogleBackups, requestGoogleAccess, uploadGoogleBackup } from './google-drive.mjs';
 
@@ -91,14 +91,6 @@ async function saveDraft(now = false) {
   if (now) await save(); else state.saveId = setTimeout(save, 350);
 }
 
-function lastExercise(exerciseId) {
-  for (const workout of state.history) {
-    const found = workout.exercises.find((exercise) => exercise.id === exerciseId && exercise.completed);
-    if (found) return found;
-  }
-  return null;
-}
-
 function summary(exercise) {
   if (!exercise.completed) return 'Não concluído';
   const weight = exercise.bodyweight || exercise.weightKg === '' ? 'Peso corporal' : `${kg(exercise.weightKg)} kg`;
@@ -117,7 +109,7 @@ function renderHome() {
 }
 
 function renderExerciseCard(exercise, index) {
-  const previous = lastExercise(exercise.id);
+  const previous = findLastExercise(state.history, exercise);
   return `<section class="card exercise-card ${exercise.completed ? 'is-complete' : ''}">
     <div class="card-header"><h2>${index + 1}. ${html(exercise.name)}</h2><span class="pill accent">${exercise.sets} séries</span></div>
     <div class="exercise-meta"><span class="pill">${html(exercise.reps)}</span><span class="pill">RIR alvo ${html(exercise.rir)}</span><span class="pill">Descanso ${html(exercise.rest)}</span></div>
@@ -201,7 +193,7 @@ async function toggle(index) {
 }
 
 async function copyLast(index) {
-  const exercise = state.active.exercises[index]; const previous = lastExercise(exercise.id);
+  const exercise = state.active.exercises[index]; const previous = findLastExercise(state.history, exercise);
   if (!previous) return;
   exercise.weightKg = previous.weightKg; await saveDraft(true); renderWorkout(); message('Última carga copiada. Registre o RIR ao terminar.');
 }
