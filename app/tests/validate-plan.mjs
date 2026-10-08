@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { WORKOUTS, findLastExercise, getWorkout } from '../training-plan.mjs';
-import { normalizeDraft, normalizeWorkout } from '../db.mjs';
+import { backupMeasurements, measurementSummary, normalizeDraft, normalizeMeasurement, normalizeMeasurements, normalizeWorkout } from '../db.mjs';
 import { isGoogleConfigured, selectBackupsForDeletion } from '../google-drive.mjs';
 
 const markdown = await readFile(new URL('../../docs/01-treino.md', import.meta.url), 'utf8');
 const appSource = await readFile(new URL('../app.mjs', import.meta.url), 'utf8');
 const indexSource = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const styleSource = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+const dbSource = await readFile(new URL('../db.mjs', import.meta.url), 'utf8');
 
 assert.equal(WORKOUTS.length, 6, 'O app deve ter seis sessões.');
 for (const workout of WORKOUTS) {
@@ -66,10 +67,34 @@ assert.match(appSource, /rirFinal/);
 assert.match(appSource, /Exercícios concluídos/);
 assert.match(appSource, /workout-actions-toggle/);
 assert.match(appSource, /workout-action-menu/);
+assert.doesNotMatch(appSource, /exercise\.sets.*séries/);
 assert.doesNotMatch(appSource, /icon-button/);
 assert.doesNotMatch(appSource, /createSeries|data-series-index|Série extra|data-rest(?=[\s=>])|beginRest|timerId/);
 assert.match(indexSource, /class="nav-icon"/);
+assert.match(indexSource, /data-view="measurements"/);
 assert.match(styleSource, /\.bottom-nav \{[^}]*border-radius: 22px/s);
+assert.match(appSource, /renderMeasurements/);
+assert.match(appSource, /data-save-measurement/);
+assert.match(appSource, /data-delete-measurement/);
+assert.match(dbSource, /createObjectStore\('measurements'/);
+
+const measurement = normalizeMeasurement({ id: 'measure-1', recordedOn: '2026-10-07', weightKg: '90,2', waistCm: '' });
+assert.deepEqual(measurement, { id: 'measure-1', recordedOn: '2026-10-07', weightKg: 90.2, waistCm: null });
+assert.equal(normalizeMeasurement({ id: 'invalid-measure', recordedOn: '2026-02-30', weightKg: '90' }), null);
+assert.equal(normalizeMeasurement({ id: 'empty-measure', recordedOn: '2026-10-07', weightKg: '', waistCm: '' }), null);
+
+const measurements = normalizeMeasurements([
+  { id: 'measure-1', recordedOn: '2026-10-07', weightKg: 90.2, waistCm: 95 },
+  { id: 'measure-2', recordedOn: '2026-10-05', weightKg: 89.8, waistCm: null },
+  { id: 'measure-3', recordedOn: '2026-09-30', weightKg: 88, waistCm: 94 },
+]);
+assert.deepEqual(measurements.map((item) => item.recordedOn), ['2026-10-07', '2026-10-05', '2026-09-30']);
+const measureSummary = measurementSummary(measurements, new Date(2026, 9, 7, 12));
+assert.equal(measureSummary.weightEntries, 2);
+assert.equal(measureSummary.averageWeightKg, 90);
+assert.deepEqual(measureSummary.latestWaist, measurements[0]);
+assert.deepEqual(backupMeasurements({ version: 2 }), []);
+assert.deepEqual(backupMeasurements({ version: 3, measurements: [measurements[0]] }), [measurements[0]]);
 
 const legsA = WORKOUTS.find((workout) => workout.id === 'legs-a');
 assert.ok(legsA.exercises.some((exercise) => exercise.id === 'cadeira-abdutora'));

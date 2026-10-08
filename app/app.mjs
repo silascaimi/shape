@@ -1,16 +1,22 @@
 import { WORKOUT_SEQUENCE, WORKOUTS, findLastExercise, getWorkout } from './training-plan.mjs';
-import { deleteItem, exportBackup, getAllWorkouts, getItem, importBackup, normalizeDraft, normalizeWorkout, putItem } from './db.mjs';
+import { deleteItem, deleteMeasurement, exportBackup, getAllMeasurements, getAllWorkouts, getItem, importBackup, measurementSummary, normalizeDraft, normalizeWorkout, putItem, upsertMeasurement } from './db.mjs';
 import { downloadGoogleBackup, hasActiveGoogleToken, isGoogleConfigured, listGoogleBackups, requestGoogleAccess, uploadGoogleBackup } from './google-drive.mjs';
 
 const app = document.querySelector('#app');
 const toast = document.querySelector('#toast');
 const connectionStatus = document.querySelector('#connection-status');
-const state = { view: 'home', history: [], active: null, settings: { key: 'app', lastCompletedWorkoutId: null }, detailId: null, saveId: null, remoteBackups: [] };
+const state = { view: 'home', history: [], measurements: [], editingMeasurementId: null, active: null, settings: { key: 'app', lastCompletedWorkoutId: null }, detailId: null, saveId: null, remoteBackups: [] };
 
 const html = (value) => String(value ?? '').replace(/[&<>'"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[c]);
 const numeric = (value) => Number(String(value).replace(',', '.'));
 const dateTime = (value) => new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
 const kg = (value) => Number(value).toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+const today = () => {
+  const date = new Date();
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
+const dateOnly = (value) => new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium' }).format(new Date(`${value}T12:00:00`));
+const measurementValue = (value) => Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 function message(text) {
   toast.textContent = text; toast.classList.remove('is-hidden');
@@ -37,8 +43,9 @@ async function setGoogleState(patch) {
 }
 
 async function refreshLocalState() {
-  const [history, draft, settings] = await Promise.all([getAllWorkouts(), getItem('drafts', 'active'), getItem('settings', 'app')]);
+  const [history, draft, settings, measurements] = await Promise.all([getAllWorkouts(), getItem('drafts', 'active'), getItem('settings', 'app'), getAllMeasurements()]);
   state.history = history;
+  state.measurements = measurements;
   state.active = normalizeDraft(draft)?.data ?? null;
   state.settings = settings ?? { key: 'app', lastCompletedWorkoutId: null };
   googleState();
@@ -111,7 +118,7 @@ function renderHome() {
 function renderExerciseCard(exercise, index) {
   const previous = findLastExercise(state.history, exercise);
   return `<section class="card exercise-card ${exercise.completed ? 'is-complete' : ''}">
-    <div class="card-header"><h2>${index + 1}. ${html(exercise.name)}</h2><span class="pill accent">${exercise.sets} séries</span></div>
+    <div class="card-header"><h2>${index + 1}. ${html(exercise.name)}</h2></div>
     <div class="exercise-meta"><span class="pill">${html(exercise.reps)}</span><span class="pill">RIR alvo ${html(exercise.rir)}</span><span class="pill">Descanso ${html(exercise.rest)}</span></div>
     <p class="substitute">Alternativa: ${html(exercise.substitute)}</p>
     <p class="previous"><strong>Último:</strong> ${previous ? html(summary(previous)) : 'Sem registro anterior.'}</p>
@@ -147,6 +154,25 @@ function renderHistory() {
     ${detail ? `<section class="card history-details"><div class="row-between"><h2>${html(detail.workoutName)}</h2><button class="button secondary small-button" data-close-history>Fechar</button></div><p class="small">${dateTime(detail.completedAt)}</p>${detail.exercises.map((exercise) => `<div class="history-exercise"><strong>${html(exercise.name)}</strong><br><span class="small">${html(summary(exercise))}</span></div>`).join('')}</section>` : ''}`;
 }
 
+function renderMeasurements() {
+  const editing = state.measurements.find((measurement) => measurement.id === state.editingMeasurementId) ?? null;
+  const summary = measurementSummary(state.measurements);
+  const average = summary.averageWeightKg === null
+    ? 'Sem pesos nos últimos 7 dias'
+    : `${measurementValue(summary.averageWeightKg)} kg`;
+  const latestWaist = summary.latestWaist
+    ? `${measurementValue(summary.latestWaist.waistCm)} cm · ${dateOnly(summary.latestWaist.recordedOn)}`
+    : 'Sem registro de cintura';
+  const history = state.measurements.length
+    ? `<ul class="history-list measurement-list">${state.measurements.map((measurement) => `<li><section class="card measurement-record"><div><strong>${dateOnly(measurement.recordedOn)}</strong><p class="small">${measurement.weightKg === null ? 'Peso não informado' : `Peso: ${measurementValue(measurement.weightKg)} kg`}<br>${measurement.waistCm === null ? 'Cintura não informada' : `Cintura: ${measurementValue(measurement.waistCm)} cm`}</p></div><div class="button-row"><button class="button secondary small-button" data-edit-measurement="${html(measurement.id)}">Editar</button><button class="button danger small-button" data-delete-measurement="${html(measurement.id)}">Excluir</button></div></section></li>`).join('')}</ul>`
+    : '<section class="card"><p>Nenhuma medida registrada ainda.</p></section>';
+  app.innerHTML = `
+    <section class="screen-heading"><p class="eyebrow">Acompanhamento corporal</p><h1>Medidas</h1><p class="muted">Registre o peso diariamente e a cintura uma vez por semana, sempre em condições parecidas.</p></section>
+    <section class="measurement-summary" aria-label="Resumo das medidas"><div class="card"><p class="small">Média de peso · últimos 7 dias</p><strong>${average}</strong><p class="small">${summary.weightEntries} registro(s) considerado(s)</p></div><div class="card"><p class="small">Cintura mais recente</p><strong>${latestWaist}</strong></div></section>
+    <section class="card"><h2>${editing ? 'Editar medida' : 'Registrar medidas'}</h2><div class="measurement-form"><div class="field"><label for="measurement-date">Data</label><input id="measurement-date" type="date" value="${html(editing?.recordedOn ?? today())}"></div><div class="field"><label for="measurement-weight">Peso (kg)</label><input id="measurement-weight" type="number" min="0.1" step="0.1" inputmode="decimal" value="${html(editing?.weightKg ?? '')}" placeholder="Ex.: 90,0"></div><div class="field"><label for="measurement-waist">Cintura (cm)</label><input id="measurement-waist" type="number" min="0.1" step="0.1" inputmode="decimal" value="${html(editing?.waistCm ?? '')}" placeholder="Ex.: 95,0"></div></div><p class="small">Informe peso, cintura ou ambos. Salvar na mesma data atualiza o registro daquele dia.</p><div class="button-row"><button class="button" data-save-measurement>${editing ? 'Salvar alterações' : 'Salvar medidas'}</button>${editing ? '<button class="button secondary" data-cancel-measurement>Editando: cancelar</button>' : ''}</div></section>
+    <section><h2>Histórico</h2>${history}</section>`;
+}
+
 function renderData() {
   const google = googleState();
   const status = !isGoogleConfigured()
@@ -169,7 +195,7 @@ function renderData() {
 }
 
 function render() {
-  if (state.view === 'workout') renderWorkout(); else if (state.view === 'history') renderHistory(); else if (state.view === 'data') renderData(); else renderHome();
+  if (state.view === 'workout') renderWorkout(); else if (state.view === 'history') renderHistory(); else if (state.view === 'measurements') renderMeasurements(); else if (state.view === 'data') renderData(); else renderHome();
   document.querySelectorAll('[data-view]').forEach((button) => button.classList.toggle('is-active', button.dataset.view === state.view || (state.view === 'workout' && button.dataset.view === 'home')));
 }
 
@@ -222,6 +248,30 @@ async function restore(file) {
     await importBackup(JSON.parse(await file.text()));
     await refreshLocalState(); state.view = 'home'; render(); message('Backup restaurado neste iPhone.');
   } catch (error) { message(error.message || 'Não foi possível importar este arquivo.'); }
+}
+
+async function saveMeasurement() {
+  const recordedOn = document.querySelector('#measurement-date').value;
+  const weightKg = document.querySelector('#measurement-weight').value;
+  const waistCm = document.querySelector('#measurement-waist').value;
+  try {
+    await upsertMeasurement({ id: state.editingMeasurementId ?? undefined, recordedOn, weightKg, waistCm });
+    state.measurements = await getAllMeasurements();
+    state.editingMeasurementId = null;
+    renderMeasurements();
+    message('Medidas salvas neste iPhone.');
+  } catch (error) {
+    message(error.message || 'Não foi possível salvar as medidas.');
+  }
+}
+
+async function removeMeasurement(id) {
+  if (!confirm('Excluir este registro de medidas?')) return;
+  await deleteMeasurement(id);
+  state.measurements = state.measurements.filter((measurement) => measurement.id !== id);
+  if (state.editingMeasurementId === id) state.editingMeasurementId = null;
+  renderMeasurements();
+  message('Registro de medidas excluído.');
 }
 
 async function connectGoogle() {
@@ -307,6 +357,10 @@ app.addEventListener('click', async (event) => {
   else if (button.dataset.finish !== undefined) await finish();
   else if (button.dataset.history) { state.detailId = button.dataset.history; renderHistory(); }
   else if (button.dataset.closeHistory !== undefined) { state.detailId = null; renderHistory(); }
+  else if (button.dataset.saveMeasurement !== undefined) await saveMeasurement();
+  else if (button.dataset.editMeasurement) { state.editingMeasurementId = button.dataset.editMeasurement; renderMeasurements(); }
+  else if (button.dataset.cancelMeasurement !== undefined) { state.editingMeasurementId = null; renderMeasurements(); }
+  else if (button.dataset.deleteMeasurement) await removeMeasurement(button.dataset.deleteMeasurement);
   else if (button.dataset.export !== undefined) await backup();
   else if (button.dataset.import !== undefined) document.querySelector('#import-file').click();
   else if (button.dataset.googleConnect !== undefined) await connectGoogle();

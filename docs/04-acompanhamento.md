@@ -7,6 +7,8 @@
 - **Força:** registre carga, repetições e RIR dos movimentos principais; compare sessões equivalentes.
 - **Fotos opcionais:** frente, lado e costas, mesma luz, distância e horário, nas semanas 1, 4, 8 e 12.
 
+Na PWA, use a aba **Medidas** para registrar peso e cintura. O resumo mostra a média dos pesos lançados nos últimos sete dias e a medida de cintura mais recente.
+
 ## Registro semanal
 
 | Sem. | Média de peso (kg) | Variação (kg) | Cintura (cm) | Treinos feitos / 6 | Sono médio (h) | Adesão alimentar (%) | Energia 1–5 | Desempenho | Decisão |
